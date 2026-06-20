@@ -1,130 +1,195 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, Link } from "react-router-dom";
 import React from "react";
 import { Box, Typography, Button, useTheme } from "@mui/material";
 import { alpha } from "@mui/material";
-import r1 from "../assets/image/12.avif";
-import { Link } from "react-router-dom";
+// استبدلي هذا المسار بملف الفيديو الخاص بكِ
+import bgVideo from "../assets/vedio/3.mp4"; 
 
 export default function PublicPage() {
   const theme = useTheme();
 
+  // اعتماد خط عربي احترافي للواجهات الذكية
+  const arabicFont = "'Cairo', 'Tajawal', 'Segoe UI', sans-serif";
+  // لون افتح ومشرق للزر ليكون واضحاً وبارزاً فوق الخلفية الداكنة
+  const brightButtonColor = "#00b4d8"; 
+
   return (
     <>
+    <Box
+      sx={{
+        position: "relative",
+        minHeight: "100vh",
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        direction: "rtl",
+        fontFamily: arabicFont,
+      }}
+    >
+      {/* 1. خلفية الفيديو */}
+      <Box
+        component="video"
+        autoPlay
+        loop
+        muted
+        playsInline
+        src={bgVideo}
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          zIndex: -2,
+        }}
+      />
+
+      {/* 2. طبقة التغطية الداكنة (Overlay) */}
       <Box
         sx={{
-          backgroundColor: theme.palette.background.default,
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(10, 25, 47, 0.7)", 
+          zIndex: -1,
+        }}
+      />
+
+      {/* 3. روابط التنقل العلوية المدمجة */}
+      <Box
+        component="nav"
+        sx={{
           display: "flex",
-          alignItems: "center",
           justifyContent: "space-between",
-          flexWrap: "wrap",
-          px: { xs: 2, md: 8 },
-          py: { xs: 4, md: 2 },
-          minHeight: "70vh",
+          alignItems: "center",
+          px: { xs: 3, md: 8 },
+          py: 3,
+          zIndex: 10,
         }}
       >
-        {/* النص */}
-        <Box
-          sx={{
-            flex: { xs: "1 1 100%", md: "1 1 45%" },
-            textAlign: { xs: "center", md: "left" },
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            color: "#fff", 
+            fontWeight: "bold",
+            fontFamily: arabicFont 
           }}
         >
-          <Typography
-            variant="h3"
-            sx={{
-              fontWeight: "bold",
-              color: theme.palette.primary.button,
-            }}
-          >
-            Welcome to Our Store
-          </Typography>
+          رعاية ذكية
+        </Typography>
 
-          <Typography
-            variant="body1"
-            sx={{
-              mb: 3,
-              fontSize: "1.1rem",
-              color: theme.palette.text.secondary,
-            }}
-          >
-            Where beauty begins and confidence shines.
-            <br />
-            Discover a world of premium skincare and makeup products designed
-            to enhance your natural glow and elevate your everyday look.
-          </Typography>
-
-          <Link to="/login" style={{ textDecoration: "none" }}>
-            <Button
-              variant="contained"
-              size="large"
-              sx={{
-                borderRadius: 2,
-                textTransform: "none",
-                px: 4,
-                py: 1.2,
-                backgroundColor: theme.palette.primary.button,
-
-                // Glow أساسي
-                boxShadow: `0 0 0px ${theme.palette.primary.button}`,
-                transition: "all 0.3s ease",
-
-                // Hover glow
-                "&:hover": {
-                  backgroundColor: theme.palette.primary.button,
-                  boxShadow: `0 0 20px 6px ${alpha(
-                    theme.palette.primary.button,
-                    0.6
-                  )}`,
-                },
-
-                // Pulse animation
-                animation: "pulse 2s infinite",
-
-                "@keyframes pulse": {
-                  "0%": {
-                    boxShadow: `0 0 0 0 ${alpha(
-                      theme.palette.primary.button,
-                      0.7
-                    )}`,
-                  },
-                  "70%": {
-                    boxShadow: `0 0 25px 10px transparent`,
-                  },
-                  "100%": {
-                    boxShadow: `0 0 0 0 transparent`,
-                  },
-                },
-              }}
-            >
-              Get Started
-            </Button>
+        <Box sx={{ display: "flex", gap: 4 }}>
+          <Link to="/about" style={{ textDecoration: "none", color: "#fff", fontWeight: 600, fontFamily: arabicFont }}>
+            من نحن
+          </Link>
+          <Link to="/story" style={{ textDecoration: "none", color: "#fff", fontWeight: 600, fontFamily: arabicFont }}>
+            قصتنا
           </Link>
         </Box>
+      </Box>
 
-        {/* الصورة */}
-        <Box
+      {/* 4. محتوى الصفحة الرئيسي والنصوص بأنيميشن تفاعلي جديد */}
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+          px: 3,
+          zIndex: 5,
+          color: "#fff",
+        }}
+      >
+        {/* العنوان الرئيسي: أنيميشن ظهور مع تكبير ناعم */}
+        <Typography
+          variant="h2"
           sx={{
-            backgroundColor: theme.palette.background.default,
-            flex: { xs: "1 1 100%", md: "1 1 45%" },
-            display: "flex",
-            justifyContent: { xs: "center", md: "flex-end" },
-            mt: { xs: 4, md: 0 },
+            fontWeight: 800,
+            mb: 2.5,
+            fontSize: { xs: "2.3rem", md: "3.8rem" },
+            fontFamily: arabicFont,
+            textShadow: "0px 4px 15px rgba(0,0,0,0.6)",
+            opacity: 0,
+            animation: "customZoomIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+            "@keyframes customZoomIn": {
+              "0%": { opacity: 0, transform: "scale(0.92) translateY(20px)" },
+              "100%": { opacity: 1, transform: "scale(1) translateY(0)" }
+            }
           }}
         >
-          <img
-            src={r1}
-            alt="Tech products"
-            width={400}
-            height={400}
-            style={{
-              maxWidth: "100%",
-              height: "auto",
-              borderRadius: "20px",
-              boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+          أهلاً بكم في مستقبل الرعاية الصحية
+        </Typography>
+
+        {/* النص الفرعي: يظهر بتأثير انسيابي متأخر قليلاً */}
+        <Typography
+          variant="h5"
+          sx={{
+            mb: 5,
+            maxWidth: "650px",
+            color: alpha("#fff", 0.9),
+            fontSize: { xs: "1.1rem", md: "1.4rem" },
+            fontFamily: arabicFont,
+            lineHeight: 1.6,
+            textShadow: "0px 2px 10px rgba(0,0,0,0.6)",
+            opacity: 0,
+            animation: "customZoomIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+            animationDelay: "0.4s", 
+          }}
+        >
+          منظومة رقمية متكاملة لربط العيادات، المختبرات، والصيدلية بذكاء وسلاسة لتأمين أفضل تجربة للمريض.
+        </Typography>
+
+        {/* زر انضم إلينا المضيء والواضح */}
+        <Link to="/login" style={{ textDecoration: "none" }}>
+          <Button
+            variant="contained"
+            size="large"
+            sx={{
+              borderRadius: "30px",
+              px: 6,
+              py: 1.6,
+              fontSize: "1.25rem",
+              fontWeight: "bold",
+              fontFamily: arabicFont,
+              color: "#0a192f", // نص داكن متناسق مع الإضاءة الساطعة للزر
+              backgroundColor: brightButtonColor,
+              boxShadow: `0 0 15px ${alpha(brightButtonColor, 0.4)}`,
+              transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+              
+              opacity: 0,
+              animation: "customZoomIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards, pulseGlow 2.5s infinite",
+              animationDelay: "0.8s, 0s", 
+
+              "&:hover": {
+                backgroundColor: brightButtonColor,
+                transform: "translateY(-3px)",
+                boxShadow: `0 0 30px 10px ${alpha(brightButtonColor, 0.7)}`,
+              },
+
+              "@keyframes pulseGlow": {
+                "0%": {
+                  boxShadow: `0 0 0 0 ${alpha(brightButtonColor, 0.6)}`,
+                },
+                "70%": {
+                  boxShadow: `0 0 30px 15px transparent`,
+                },
+                "100%": {
+                  boxShadow: `0 0 0 0 transparent`,
+                },
+              },
             }}
-          />
-        </Box>
+          >
+            انضم إلينا
+          </Button>
+        </Link>
       </Box>
-    </>
+    </Box>
+       <Outlet /> 
+</>
   );
 }

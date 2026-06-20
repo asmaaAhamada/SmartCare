@@ -9,19 +9,27 @@ import {
   useTheme,
   Button
 } from "@mui/material";
-import SpaIcon from "@mui/icons-material/Spa";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
-import { darkblue, pink, white } from "../color-main/color";
-import r1 from '../assets/image/image.png'
-import r2 from '../assets/image/22.jpg'
+import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import MedicalInformationIcon from '@mui/icons-material/MedicalInformation';
+
+import r1 from '../assets/image/pexels-shvetsa-4225880.jpg'; 
+import r2 from '../assets/image/pexels-tara-winstead-8386437.jpg';
+
 
 export default function AboutPage() {
   const theme = useTheme();
   
   const isLight = theme.palette.mode === 'light';
-  const headerColor = theme.palette.primary.textheadr; 
-  const cardBg = theme.palette.primary.card;
+  const primaryBlue = "#00b4d8"; 
+  const darkNavy = "#0a192f";
+  const white = "#ffffff";
+  const headerColor = theme.palette.text.primary;
+  
+  // خلفية البطاقات مدمجة مع التدرج الجديد
+  const cardBg = isLight ? "rgba(255, 255, 255, 0.85)" : "rgba(23, 42, 69, 0.7)";
+  
+  const arabicFont = "'Cairo', 'Tajawal', 'Segoe UI', sans-serif";
 
   // --- CSS Animations ---
   const animations = {
@@ -45,15 +53,20 @@ export default function AboutPage() {
 
   return (
     <Box sx={{ 
-      bgcolor: "background.default", 
-      py: 10, 
+      // التدرج اللوني الجديد الممتد بين الأبيض، الرمادي، والأزرق الخفيف
+      backgroundImage: isLight 
+        ? "linear-gradient(180deg, #ffffff 0%, #f4f7f6 50%, #eef5f9 100%)" 
+        : `linear-gradient(180deg, ${darkNavy} 0%, #0f2647 100%)`, 
+      py: 12, 
       transition: '0.3s',
-      overflow: 'hidden', // لمنع ظهور شريط التمرير أثناء الحركة
+      overflow: 'hidden', 
+      direction: "rtl", 
+      fontFamily: arabicFont,
       ...animations 
     }}>
       <Container maxWidth="lg">
         
-        {/* --- Section 1: Hero Header (Fade In First) --- */}
+        {/* --- Section 1: Hero Header --- */}
         <Box 
           textAlign="center" 
           mb={10}
@@ -61,44 +74,59 @@ export default function AboutPage() {
         >
           <Typography
             variant="overline"
-            sx={{ color: "primary.button", fontWeight: "bold", letterSpacing: 2 }}
+            sx={{ 
+              color: primaryBlue, 
+              fontWeight: "bold", 
+              letterSpacing: 1.5,
+              fontFamily: arabicFont,
+              fontSize: "1rem"
+            }}
           >
-            Our Journey
+            رحلتنا نحو الابتكار
           </Typography>
           <Typography
             variant="h2"
             sx={{
               fontWeight: 800,
-              color: isLight ? pink : darkblue,
+              color: isLight ? "#1e293b" : white, // لون داكن واضح متناسق مع الرمادي
               mt: 1,
-              fontSize: { xs: "2.5rem", md: "3.5rem" },
+              fontFamily: arabicFont,
+              fontSize: { xs: "2.2rem", md: "3.5rem" },
             }}
           >
-            About <span style={{ color: isLight ? darkblue : pink }}>Our Brand</span>
+            عن <span style={{ color: primaryBlue }}>منظومتنا الطبية</span>
           </Typography>
           <Typography
             variant="h6"
-            sx={{ color: "text.primary", mt: 2, maxWidth: "750px", mx: "auto", fontWeight: 400 }}
+            sx={{ 
+              color: "text.secondary", 
+              mt: 3, 
+              maxWidth: "800px", 
+              mx: "auto", 
+              fontWeight: 500,
+              fontFamily: arabicFont,
+              lineHeight: 1.8
+            }}
           >
-            We believe that true beauty begins with self-care. Our store is curated to be your ultimate destination for everything that enhances your natural glow.
+            نحن نؤمن بأن الرعاية الصحية الممتازة تبدأ من التنظيم الدقيق. تم تصميم نظامنا ليكون الحل الشامل الذي يربط بين الأقسام الطبية لضمان تقديم أفضل خدمة للمريض وأعلى كفاءة للإدارة.
           </Typography>
         </Box>
 
-        {/* --- Section 2: Who We Are (Slide In Effects) --- */}
+        {/* --- Section 2: Who We Are --- */}
         <Grid container spacing={8} alignItems="center" sx={{ mb: 12 }}>
-          <Grid item xs={12} md={6} sx={{ animation: "slideInLeft 1.2s ease-out 0.2s backwards" }}>
+          <Grid item xs={12} md={6} sx={{ animation: "slideInRight 1.2s ease-out 0.2s backwards" }}>
             <Box
               sx={{
                 position: "relative",
-                animation: "float 4s ease-in-out infinite", // إضافة حركة طفو مستمرة للصورة
+                animation: "float 4s ease-in-out infinite", 
                 "&::after": {
                   content: '""',
                   position: "absolute",
                   top: -20,
-                  left: -20,
+                  right: -20, 
                   width: "100%",
                   height: "100%",
-                  border: `2px solid ${theme.palette.primary.button}`,
+                  border: `2px solid ${primaryBlue}`,
                   borderRadius: "40px",
                   zIndex: 0,
                 },
@@ -107,6 +135,7 @@ export default function AboutPage() {
               <Box
                 component="img"
                 src={r1}
+                alt="Medical Team"
                 sx={{
                   width: "100%",
                   height: 420,
@@ -119,49 +148,49 @@ export default function AboutPage() {
               />
             </Box>
           </Grid>
-          <Grid item xs={12} md={6} sx={{ animation: "slideInRight 1.2s ease-out 0.4s backwards" }}>
-            <Box display="flex" alignItems="center" gap={1} mb={2}>
-              <Avatar sx={{ bgcolor: "primary.main1", color: "primary.button" }}>
-                <SpaIcon />
+
+          <Grid item xs={12} md={6} sx={{ animation: "slideInLeft 1.2s ease-out 0.4s backwards" }}>
+            <Box display="flex" alignItems="center" gap={2} mb={3}>
+              <Avatar sx={{ bgcolor: "rgba(0, 180, 216, 0.12)", color: primaryBlue, width: 56, height: 56 }}>
+                <HealthAndSafetyIcon fontSize="large" />
               </Avatar>
-              <Typography variant="h4" fontWeight="bold" color={headerColor}>
-                Who We Are
+              <Typography variant="h3" fontWeight="bold" color={isLight ? "#1e293b" : headerColor} sx={{ fontFamily: arabicFont }}>
+                من نحن؟
               </Typography>
             </Box>
-            <Typography variant="body1" sx={{ fontSize: "1.1rem", lineHeight: 1.8, color: "text.primary" }}>
-              We are more than just a beauty store; we are a sanctuary for confidence. 
-              Our mission is to bring you a handpicked selection of premium skincare and makeup products 
-              that blend luxury with effectiveness, designed to fit your unique lifestyle and personality.
+            <Typography variant="body1" sx={{ fontSize: "1.15rem", lineHeight: 1.9, color: "text.secondary", fontFamily: arabicFont }}>
+              نحن فريق من المطورين وخبراء التكنولوجيا الطبية، اجتمعنا لبناء نظام ذكي يحلل ويعالج تحديات إدارة المستشفيات والعيادات. 
+              <br /><br />
+              مهمتنا هي القضاء على العمل الورقي الروتيني، وتوفير بيئة رقمية آمنة تربط الاستقبال، المحاسبة، الصيدلية، والمختبر في واجهة واحدة متزامنة لحظياً (Real-time)، مما يتيح للأطباء التركيز على ما يهم حقاً: العناية بالمرضى.
             </Typography>
           </Grid>
         </Grid>
 
-        {/* --- Section 3: Story & Vision (Delayed Zoom-In) --- */}
+        {/* --- Section 3: Story & Vision --- */}
         <Grid container spacing={4}>
           <Grid item xs={12} md={6} sx={{ animation: "fadeInUp 1s ease-out 0.6s backwards" }}>
             <Paper
-              elevation={0}
+              elevation={isLight ? 3 : 0}
               sx={{
                 p: 5,
                 height: "100%",
                 borderRadius: "30px",
                 bgcolor: cardBg,
-                border: `1px solid ${theme.palette.primary.chip}`,
+                border: isLight ? "1px solid rgba(0, 180, 216, 0.1)" : `1px solid rgba(100, 255, 218, 0.1)`,
                 transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                backdropFilter: "blur(10px)",
                 "&:hover": { 
-                  transform: "translateY(-15px) scale(1.02)",
-                  boxShadow: "0 20px 40px rgba(0,0,0,0.1)"
+                  transform: "translateY(-15px)",
+                  boxShadow: isLight ? "0 20px 40px rgba(0, 180, 216, 0.12)" : "0 20px 40px rgba(0, 180, 216, 0.15)"
                 }
               }}
             >
-              <FavoriteIcon sx={{ fontSize: 40, color: "primary.button", mb: 2 }} />
-              <Typography variant="h5" fontWeight="bold" mb={2} color={headerColor}>
-                Our Story
+              <VerifiedUserIcon sx={{ fontSize: 45, color: primaryBlue, mb: 3 }} />
+              <Typography variant="h4" fontWeight="bold" mb={2} color={isLight ? "#1e293b" : headerColor} sx={{ fontFamily: arabicFont }}>
+                رسالتنا (Our Mission)
               </Typography>
-              <Typography color="text.primary" lineHeight={1.7}>
-                Our journey started with a simple passion: helping every woman feel empowered in her own skin. 
-                We searched for products that combine quality and elegance to build a space where beauty 
-                is not just seen, but truly felt and celebrated.
+              <Typography color="text.secondary" lineHeight={1.8} fontSize="1.05rem" sx={{ fontFamily: arabicFont }}>
+                بدأت رحلتنا من إدراك الفجوة بين الأقسام الطبية وتأخر تبادل المعلومات. لذلك صممنا هذا نظام استناداً إلى مبدأ "صلاحيات دقيقة لبيانات آمنة"، لضمان الخصوصية التامة لملفات المرضى، وتسهيل تتبع الفواتير والتقارير الطبية بضغطة زر.
               </Typography>
             </Paper>
           </Grid>
@@ -175,34 +204,30 @@ export default function AboutPage() {
                 borderRadius: "30px",
                 position: "relative", 
                 overflow: "hidden", 
-                backgroundImage: `linear-gradient(135deg, rgba(187, 23, 146, 0.85), rgba(123, 132, 155, 0.85)), url(${r2})`,
+                backgroundImage: `linear-gradient(135deg, rgba(10, 25, 47, 0.85), rgba(0, 180, 216, 0.75)), url(${r2})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 color: white, 
-                boxShadow: "0 15px 35px rgba(0,0,0,0.2)",
+                boxShadow: "0 15px 35px rgba(0,0,0,0.15)",
                 transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
                 "&:hover": { 
-                  transform: "translateY(-15px) scale(1.02)",
+                  transform: "translateY(-15px)",
+                  boxShadow: "0 25px 50px rgba(0, 180, 216, 0.25)"
                 },
-                ...( !isLight && {
-                  backgroundImage: `linear-gradient(135deg, rgba(255, 192, 203, 0.8), rgba(152, 25, 210, 0.8)), url(${r2})`,
-                })
               }}
             >
-              <AutoAwesomeIcon sx={{ fontSize: 40, mb: 2, color: isLight ? "primary.main1" : "inherit" }} />
-              <Typography variant="h5" fontWeight="bold" mb={2}>
-                Our Vision
+              <MedicalInformationIcon sx={{ fontSize: 45, mb: 3, color: white }} />
+              <Typography variant="h4" fontWeight="bold" mb={2} sx={{ fontFamily: arabicFont }}>
+                رؤيتنا (Our Vision)
               </Typography>
-              <Typography lineHeight={1.7} sx={{ opacity: 0.9 }}>
-                To become the most trusted beauty destination that inspires self-love and individuality. 
-                We aim to empower every woman to express her femininity through products that 
-                enhance her natural beauty and elevate her daily routine.
+              <Typography lineHeight={1.8} fontSize="1.05rem" sx={{ opacity: 0.9, fontFamily: arabicFont }}>
+                أن نصبح الخيار الأول والمنصة الأكثر موثوقية لإدارة المنشآت الطبية الذكية. نسعى لتمكين الأطباء والإداريين من اتخاذ قرارات سريعة ودقيقة بناءً على تقارير مالية وطبية فورية، لرفع مستوى الرعاية الصحية إلى آفاق جديدة.
               </Typography>
             </Paper>
           </Grid>
         </Grid>
 
-        {/* --- Final CTA (Pop Up) --- */}
+        {/* --- Final CTA --- */}
         <Box 
           textAlign="center" 
           mt={12}
@@ -211,22 +236,23 @@ export default function AboutPage() {
           <Button 
             variant="contained" 
             sx={{ 
-              bgcolor: 'primary.button', 
+              bgcolor: primaryBlue, 
+              color: isLight ? white : darkNavy,
               px: 6, py: 2, 
               borderRadius: '50px',
-              fontSize: '1.1rem',
+              fontSize: '1.2rem',
               fontWeight: 'bold',
-              textTransform: 'uppercase',
-              letterSpacing: 1,
-              transition: "0.3s",
+              fontFamily: arabicFont,
+              transition: "all 0.3s ease",
+              boxShadow: `0 4px 20px ${theme.palette.alpha ? theme.palette.alpha(primaryBlue, 0.3) : "rgba(0, 180, 216, 0.3)"}`,
               '&:hover': { 
-                bgcolor: 'primary.logo',
-                transform: "scale(1.1)",
-                boxShadow: "0 10px 20px rgba(0,0,0,0.2)"
+                bgcolor: "#0096b1",
+                transform: "translateY(-3px)",
+                boxShadow: `0 8px 25px rgba(0, 180, 216, 0.5)`
               }
             }}
           >
-            Discover the Collection
+            استكشف لوحات التحكم
           </Button>
         </Box>
 

@@ -1,47 +1,20 @@
+import React from "react";
 import { Box } from "@mui/material";
 import PublicPage from "./publicPage";
-import AboutPage from "./AboutPage";
+import FeaturesSection from "./FeaturesSection";
 
 export default function HomePage() {
   return (
-    <>
-      {/* Section 1 */}
-      <Box
-        sx={{
-          opacity: 0,
-          transform: "translateY(60px)",
-          animation: "fadeUp 1s ease forwards",
-          animationDelay: "0.2s",
-
-          "@keyframes fadeUp": {
-            to: {
-              opacity: 1,
-              transform: "translateY(0)",
-            },
-          },
-        }}
-      >
+    <Box sx={{ width: "100%", minHeight: "100vh", backgroundColor: "#0a192f" }}>
+      {/* القسم الأول: واجهة الفيديو الترحيبية */}
+      <Box component="section">
         <PublicPage />
       </Box>
 
-      {/* Section 2 */}
-      <Box
-        sx={{
-          opacity: 0,
-          transform: "translateY(60px)",
-          animation: "fadeUp 1s ease forwards",
-          animationDelay: "0.6s",
-
-          "@keyframes fadeUp": {
-            to: {
-              opacity: 1,
-              transform: "translateY(0)",
-            },
-          },
-        }}
-      >
-        <AboutPage />
+      {/* القسم الثاني: بطاقات الميزات التي تظهر عند النزول (Scroll) */}
+      <Box component="section">
+        <FeaturesSection />
       </Box>
-    </>
+    </Box>
   );
 }

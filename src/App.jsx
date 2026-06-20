@@ -7,6 +7,7 @@ import LoginPage from './pages/loginPage'
 import AboutPage from './pages/AboutPage'
 import HomePage from './pages/HomePage'
 import DashBoardPage from './pages/DashBoardPage'
+import StoryPage from './pages/StoryPage';
 
 
 
@@ -20,12 +21,12 @@ export default function App({toggleMode, mode}){
        <Routes>
 
     
-        <Route path="/" element={<Layout toggleMode={toggleMode} mode={mode}/>}>
-<Route index element={<HomePage />} />
-    <Route path="/" element={<HomePage />} />
+    <Route path="/" element={<PublicPage />} />
     <Route path="/public" element={<PublicPage />} />
 
     <Route path="/about" element={<AboutPage />} />
+        <Route path="/story" element={<StoryPage />} />
+
  <Route path="/login" element={<LoginPage />} />
 
 {/* requiredToken */}
@@ -33,7 +34,7 @@ export default function App({toggleMode, mode}){
 
 {/* =========requiredToken =========*/}
 
-</Route>
+
        
      
 </Routes> 
