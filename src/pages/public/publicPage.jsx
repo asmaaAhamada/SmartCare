@@ -2,8 +2,8 @@ import { Outlet, Link } from "react-router-dom";
 import React from "react";
 import { Box, Typography, Button, useTheme } from "@mui/material";
 import { alpha } from "@mui/material";
+import { baby_blue } from "../../color-main/color";
 // استبدلي هذا المسار بملف الفيديو الخاص بكِ
-import bgVideo from "../assets/vedio/3.mp4"; 
 
 export default function PublicPage() {
   const theme = useTheme();
@@ -11,7 +11,7 @@ export default function PublicPage() {
   // اعتماد خط عربي احترافي للواجهات الذكية
   const arabicFont = "'Cairo', 'Tajawal', 'Segoe UI', sans-serif";
   // لون افتح ومشرق للزر ليكون واضحاً وبارزاً فوق الخلفية الداكنة
-  const brightButtonColor = "#00b4d8"; 
+  const brightButtonColor = baby_blue; 
 
   return (
     <>
@@ -33,8 +33,7 @@ export default function PublicPage() {
         loop
         muted
         playsInline
-        src={bgVideo}
-        sx={{
+src="/video/1.mp4"        sx={{
           position: "absolute",
           top: 0,
           left: 0,

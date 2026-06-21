@@ -81,7 +81,8 @@ export default function FeaturesSection() {
       {/* شبكة البطاقات التفاعلية */}
       <Grid container spacing={4} justifyContent="center">
         {features.map((item, index) => (
-<Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>            <Card
+          <Grid item xs={12} sm={6} md={4} key={index}>
+            <Card
               sx={{
                 height: "100%",
                 backgroundColor: "rgba(23, 42, 69, 0.7)", // لون بطاقات زجاجي داكن

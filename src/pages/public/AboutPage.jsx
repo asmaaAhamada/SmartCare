@@ -13,8 +13,8 @@ import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import MedicalInformationIcon from '@mui/icons-material/MedicalInformation';
 
-import r1 from '../assets/image/pexels-shvetsa-4225880.jpg'; 
-import r2 from '../assets/image/pexels-tara-winstead-8386437.jpg';
+import r1 from '../../assets/image/pexels-shvetsa-4225880.jpg'; 
+import r2 from '../../assets/image/pexels-tara-winstead-8386437.jpg';
 
 
 export default function AboutPage() {

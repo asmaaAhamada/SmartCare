@@ -12,9 +12,9 @@ import LanIcon from '@mui/icons-material/Lan';
 import AutoTaskIcon from '@mui/icons-material/AssignmentTurnedIn';
 import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite';
 
-import storyVideo from "../assets/vedio/1.mp4"; 
-import timelineImg1 from "../assets/image/pexels-karola-g-4021775.jpg"; 
-import timelineImg2 from "../assets/image/pexels-ai25studioai-5215017.jpg"; 
+import storyVideo from "../../assets/vedio/1.mp4"; 
+import timelineImg1 from "../../assets/image/pexels-karola-g-4021775.jpg"; 
+import timelineImg2 from "../../assets/image/pexels-ai25studioai-5215017.jpg"; 
 
 export default function StoryPage() {
   const theme = useTheme();

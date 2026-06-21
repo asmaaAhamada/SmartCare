@@ -3,6 +3,7 @@ import { Box } from "@mui/material";
 import PublicPage from "./publicPage";
 import FeaturesSection from "./FeaturesSection";
 
+
 export default function HomePage() {
   return (
     <Box sx={{ width: "100%", minHeight: "100vh", backgroundColor: "#0a192f" }}>
