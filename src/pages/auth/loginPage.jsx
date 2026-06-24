@@ -15,7 +15,7 @@ import { baby_blue, darkblue } from '../../color-main/color';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { clearError, Log_in, setformInfo, setError } from '../../backend/slice/log_in_Slice';
+import { clearError, Log_in, setformInfo, setError } from '../../backend/slice/auth/log_in_Slice';
 
 // استيراد الصورة الخلفية للقسم الأيمن
 import bgImage from '../../assets/image/image.jpg'; 
@@ -27,7 +27,7 @@ export default function LoginPage() {
   const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);
 
-  const { username, password, email } = useSelector((state) => state.Log_in.formInfo);
+  const {  password, email } = useSelector((state) => state.Log_in.formInfo);
   const { isLoading, error } = useSelector((state) => state.Log_in);
 
   const dispatch = useDispatch();
@@ -35,11 +35,11 @@ export default function LoginPage() {
 
   const handleClickShowPassword = () => setShowPassword((prev) => !prev);
 
-  async function Login(e) {
+ async function Login(e) {
     e.preventDefault();
     dispatch(clearError());
 
-    // validation
+    // التحقق من الحقول (Validation)
     let hasError = false;
 
     if (!email) {
@@ -55,16 +55,30 @@ export default function LoginPage() {
     if (hasError) return;
 
     try {
-      await dispatch(Log_in()).unwrap();
-      navigate("/dashboard");
-    } catch (err) {
-      console.log(err);
+      // هنا قمنا بحفظ النتيجة في resultAction مباشرة بعد عمل unwrap
+      const response = await dispatch(Log_in()).unwrap();
+      
+      // بما أننا استخدمنا unwrap، فالوصول للـ role يكون مباشرة من الاستجابة الناجحة
+      const role = response?.role; 
+
+     if (response?.data?.admin?.role === "admin") {
+  navigate("/dashbord");
+
+      } else {
+        console.log("تم تسجيل الدخول ولكن الصلاحية ليست أدمن:", role);
+      }
+
+    } catch (apiError) {
+      // الـ unwrap سيرسل الخطأ تلقائياً إلى هنا عند الفشل
+      console.error("خطأ التسجيل من الباكيند:", apiError);
     }
-  }
+  } 
+    
+  
 
   // ستايل الحقول مع ضبط المحاذاة والخطوط
   const textFieldStyles = {
-    "& .MuiInputLabel-root": { 
+    "& .MuiInputLabel-r// هنا تم إغلاق الدالة بشكل صحيح تماماً 👍oot": { 
       fontFamily: arabicFont, 
       color: "text.disabled", 
       right: 16, 
@@ -200,26 +214,7 @@ export default function LoginPage() {
               }}
             />
 
-            {/* حقل اسم المستخدم مع نقل الأيقونة لجهة اليسار (endAdornment) */}
-            <TextField
-              type='text'
-              value={username}
-              onChange={(e) => dispatch(setformInfo({ username: e.target.value }))}
-              fullWidth
-              label="اسم المستخدم"
-              autoComplete="new-password"
-              sx={textFieldStyles}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <PersonOutlineIcon sx={{ color: medicalTealColor, mx: 0.5 }} />
-                  </InputAdornment>
-                ),
-              }}
-              inputProps={{ 
-                style: { fontFamily: arabicFont, textAlign: 'right' }
-              }}
-            />
+           
 
             {/* حقل كلمة المرور والأيقونة مرتبة يساراً بشكل تلقائي كالعين */}
             <TextField

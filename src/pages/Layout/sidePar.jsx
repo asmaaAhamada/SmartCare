@@ -37,6 +37,7 @@ import Diversity1OutlinedIcon from '@mui/icons-material/Diversity1Outlined';
 import MedicalServicesOutlinedIcon from '@mui/icons-material/MedicalServicesOutlined';
 import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined';
 import {
+  baby_blue,
   darkgray,
 } from  "../../color-main/color";
 
@@ -147,17 +148,13 @@ function Sidebar({ toggleMode, mode }) {
   const location = useLocation();
 
   // اللون الأزرق الطبي المعتمد للسايدبار
-  const medicalTealColor = "#2ca8c9"; 
+  const medicalTealColor =baby_blue; 
 
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // بيانات المستخدم الافتراضية
-  const user = {
-    name: "د. أحمد علي",
-    role: "مدير النظام",
-    avatarUrl: "" 
-  };
+
+const userInfo = useSelector((state) => state.user?.userInfo);
 
   const filteredMenuItems = useMemo(() => {
     return menuItems;
@@ -174,104 +171,152 @@ function Sidebar({ toggleMode, mode }) {
 
   const drawerContent = (
     <Box
+  sx={{
+    width: 256,
+    height: "100vh",
+    backgroundColor: medicalTealColor,
+    color: "white",
+    direction: "rtl",
+    display: "flex",
+    flexDirection: "column",
+    overflow: "hidden",
+  }}
+>
+  {/* اللوجو */}
+  <Box sx={{ flexShrink: 0 }}>
+    <LogoHeader />
+  </Box>
+
+  {/* القائمة */}
+  <List
+    sx={{
+      flex: 1,
+      minHeight: 0,
+      overflowY: "auto",
+      px: 1,
+      "&::-webkit-scrollbar": {
+        width: "4px",
+      },
+      "&::-webkit-scrollbar-thumb": {
+        backgroundColor: "rgba(255,255,255,.3)",
+        borderRadius: "20px",
+      },
+    }}
+  >
+    {filteredMenuItems.map((item, index) => (
+      <SidebarItem
+        key={index}
+        item={item}
+        active={location.pathname === item.path}
+        navigate={navigate}
+        isDesktop={isDesktop}
+        setMobileOpen={setMobileOpen}
+        theme={theme}
+        medicalTeal={medicalTealColor}
+      />
+    ))}
+  </List>
+
+  {/* معلومات المستخدم */}
+  <Box
+    sx={{
+      flexShrink: 0,
+      p: 2,
+      borderTop: "1px solid rgba(255,255,255,.15)",
+      backgroundColor: alpha("#000", 0.05),
+    }}
+  >
+    <Box
       sx={{
-        width: "256px",
-        height: "100vh",
-        backgroundColor: medicalTealColor, 
-        color: "white",
-        direction: "rtl",
         display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        overflow: "hidden", 
+        alignItems: "center",
+        gap: 1.5,
+        mb: 1.5,
       }}
     >
-      {/* الجزء العلوي: اللوجو */}
-      <Box>
-        <LogoHeader />
-      </Box>
+      <Avatar
+        sx={{
+          width: 44,
+          height: 44,
+          backgroundColor: "white",
+          color: medicalTealColor,
+          fontWeight: 700,
+        }}
+      >
+        {userInfo?.first_name?.charAt(0) || "A"}
+      </Avatar>
 
-      {/* الجزء الأوسط: القائمة المتمررة */}
-      <List sx={{ 
-        mt: 2, 
-        flex: 1,         
-        overflowY: "auto", 
-        "&::-webkit-scrollbar": { display: "none" },
-        msOverflowStyle: "none",
-        scrollbarWidth: "none",
-      }}>      
-        {filteredMenuItems.map((item, index) => (
-          <SidebarItem
-            key={index}
-            item={item}
-            active={location.pathname === item.path}
-            navigate={navigate}
-            isDesktop={isDesktop}
-            setMobileOpen={setMobileOpen}
-            theme={theme}
-            medicalTeal={medicalTealColor}
-          />
-        ))}
-      </List>
-
-      {/* الجزء السفلي الثابت: معلومات المستخدم وزر تسجيل الخروج */}
-      <Box sx={{ p: 2, backgroundColor: "transparent" }}>
-        
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5, px: 1 }}>
-          <Avatar 
-            src={user.avatarUrl} 
-            alt={user.name}
-            sx={{ 
-              width: 44, 
-              height: 44, 
-              backgroundColor: "white", 
-              color: medicalTealColor,
-              fontWeight: 700 
-            }}
-          >
-            {user.name.charAt(0)}
-          </Avatar>
-          
-          <Box sx={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
-            <Typography sx={{ fontSize: "17px", fontWeight: 600, noWrap: true, color: "white" }}>
-              {user.name}
-            </Typography>
-            <Typography sx={{ fontSize: "13px", color: alpha("#ffffff", 0.75), noWrap: true }}>
-              {user.role}
-            </Typography>
-          </Box>
-        </Box>
-
-        {/* زر تسجيل الخروج بدون خلفية داكنة للقسم */}
-        <ListItemButton
-          onClick={handleLogout}
+      <Box
+        sx={{
+          minWidth: 0,
+          flex: 1,
+        }}
+      >
+        <Typography
+          noWrap
           sx={{
-            borderRadius: "12px",
-            minHeight: 40,
-            color: "#ff4d4d", 
-            backgroundColor: alpha("#ff4d4d", 0.12), 
-            "&:hover": {
-              backgroundColor: "#ff4d4d", 
-              color: "white",
-              boxShadow: "0 4px 12px rgba(255, 77, 77, 0.3)"
-            },
-            display: "flex",
-            alignItems: "center",
-            gap: 2,
-            width: "100%",
-            mt: 1
+            fontSize: 16,
+            fontWeight: 700,
+            color: "white",
           }}
         >
-          <ListItemIcon sx={{ color: "inherit", minWidth: "unset" }}>
-            <LogoutOutlinedIcon sx={{ fontSize: "22px", transform: "rotate(180deg)" }} />
-          </ListItemIcon>
-          <ListItemText 
-            primary="تسجيل الخروج" 
-            primaryTypographyProps={{ fontSize: "14px", fontWeight: 600, textAlign: "right" }}
-          />
-        </ListItemButton>
+          {userInfo?.first_name} {userInfo?.last_name}
+        </Typography>
+
+        <Typography
+          noWrap
+          sx={{
+            fontSize: 13,
+            color: "rgba(255,255,255,.75)",
+          }}
+        >
+          {userInfo?.role === "admin"
+            ? "مدير النظام"
+            : userInfo?.role}
+        </Typography>
       </Box>
     </Box>
+
+    <ListItemButton
+      onClick={handleLogout}
+      sx={{
+         mx: 1,
+    mb: 1,
+    minHeight: 42,
+        borderRadius: "12px",
+        color: "#ff4d4d",
+        backgroundColor: alpha("#ff4d4d", 0.12),
+
+        "&:hover": {
+          backgroundColor: "#ff4d4d",
+          color: "white",
+        },
+      }}
+    >
+      <ListItemIcon
+        sx={{
+          color: "inherit",
+          minWidth: 30,
+        }}
+      >
+        <LogoutOutlinedIcon
+          sx={{
+            transform: "rotate(180deg)",
+          }}
+        />
+      </ListItemIcon>
+
+      <ListItemText
+        primary="تسجيل الخروج"
+        primaryTypographyProps={{
+          fontSize: 14,
+          fontWeight: 600,
+          textAlign: "right",
+        }}
+      />
+    </ListItemButton>
+  </Box>
+</Box>
   );
 
   return (

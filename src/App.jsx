@@ -17,6 +17,7 @@ import PatientsDashboard from './pages/Patients/PatientsDashboard';
 import StatisticsPage from './pages/dashbord/StatisticsPage';
 import AnnouncementsPage from './pages/news/AnnouncementsPage';
 import AnnouncementDetails from './pages/news/AnnouncementDetails';
+import ProtectedRoute from './pages/auth/proctedRout';
 
 
 
@@ -35,7 +36,8 @@ export default function App({toggleMode, mode}){
         <Route path="/login" element={<LoginPage />} />
 
       
-         
+           <Route element={<ProtectedRoute allowedRole={["admin"]} />}>
+
         <Route path="/dashbord" element={<Sidebar toggleMode={toggleMode} mode={mode} />}>
           {/* الصفحة الافتراضية المباشرة التي تفتح فور دخول لوحة التحكم */}
           <Route index element={<StatisticsPage />} /> 
@@ -47,6 +49,7 @@ export default function App({toggleMode, mode}){
           <Route path="Clinics" element={<ClinicsPage />} />
                     <Route path="roles" element={<PermissionsPage />} />
 
+        </Route>
         </Route>
       </Routes>
 

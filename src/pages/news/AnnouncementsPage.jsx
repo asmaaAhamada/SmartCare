@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Card, Button, Row, Col, Typography, Space, Tooltip, Popconfirm } from "antd";
 import { PlusOutlined, EyeOutlined, EditOutlined, DeleteOutlined, CalendarOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { baby_blue } from "../../color-main/color";
 
 const { Title, Text } = Typography;
 
@@ -32,7 +33,7 @@ export const fakeAnnouncements = [
 
 export default function AnnouncementsPage() {
   const navigate = useNavigate();
-  const sidebarBlue = "#2ca8c9"; // لون نظامك المعتمد
+  const sidebarBlue =baby_blue; // لون نظامك المعتمد
   const [announcements, setAnnouncements] = useState(fakeAnnouncements);
 
   // دالة الحذف الوهمية

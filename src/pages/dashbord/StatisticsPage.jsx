@@ -3,11 +3,12 @@ import { Card, Typography, Row, Col, Space } from "antd";
 import { BarChartOutlined, PieChartOutlined } from "@ant-design/icons";
 import DoctorsChart from "./DoctorsChart";
 import AppointmentsChart from "./AppointmentsChart";
+import { baby_blue } from "../../color-main/color";
 
 const { Title, Text } = Typography;
 
 export default function StatisticsPage() {
-  const sidebarBlue = "#2ca8c9"; //
+  const sidebarBlue =baby_blue; //
 
   return (
     <div style={{ width: "100%", direction: "rtl", padding: "16px" }}>

@@ -10,6 +10,7 @@ import {
   UserOutlined,
   LockOutlined
 } from "@ant-design/icons";
+import { baby_blue } from "../../color-main/color";
 
 const { Title, Text } = Typography;
 
@@ -68,7 +69,7 @@ export default function PermissionsPage() {
   const [roles, setRoles] = useState(initialRoles);
   const [editingRole, setEditingRole] = useState(null); // الدور الحالي الذي يتم تعديله
   
-  const sidebarBlue = "#2ca8c9"; // لون السايد بار المعتمد لديكِ
+  const sidebarBlue =baby_blue; // لون السايد بار المعتمد لديكِ
 
   // إجرائيات الإنشاء، الحذف، والتحديث
   const handleCreateRole = () => {

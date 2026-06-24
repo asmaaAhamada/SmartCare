@@ -7,6 +7,7 @@ import {
   CheckCircleOutlined, 
   DeleteOutlined 
 } from "@ant-design/icons";
+import { baby_blue } from "../../color-main/color";
 
 // استدعاء الكومبوننت بشكل Lazy لتخفيف حجم الكود المبدئي للشاشة
 const DoctorProfileModal = lazy(() => import("./DoctorProfileModal"));
@@ -53,7 +54,7 @@ export default function DoctorPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
 
-  const sidebarBlue = "#2ca8c9"; // لون السايد بار المعتمد
+  const sidebarBlue =baby_blue; // لون السايد بار المعتمد
 
   const handleAddDoctor = () => console.log("إضافة طبيب");
   const handleEdit = (id) => console.log("تعديل", id);

@@ -3,13 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Card, Button, Typography, Space, Popconfirm, Divider } from "antd";
 import { ArrowRightOutlined, EditOutlined, DeleteOutlined, CalendarOutlined } from "@ant-design/icons";
 import { fakeAnnouncements } from "./AnnouncementsPage"; // استيراد الداتا الوهمية لقراءتها
+import { baby_blue } from "../../color-main/color";
 
 const { Title, Paragraph, Text } = Typography;
 
 export default function AnnouncementDetails() {
   const { id } = useParams(); // جلب آيدي الإعلان من الرابط
   const navigate = useNavigate();
-  const sidebarBlue = "#2ca8c9";
+  const sidebarBlue =baby_blue;
 
   // البحث عن الإعلان المطلوب بناءً على الـ ID
   const announcement = fakeAnnouncements.find(item => item.id === parseInt(id));

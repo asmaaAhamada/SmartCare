@@ -1,8 +1,9 @@
 import React from "react";
 import { VictoryPie, VictoryTooltip } from "victory";
+import { baby_blue } from "../../color-main/color";
 
 const appointmentsData = [
-  { x: "مكتملة", y: 450, color: "#2ca8c9" }, // اللون الأزرق الأساسي للنظام
+  { x: "مكتملة", y: 450, color:baby_blue }, // اللون الأزرق الأساسي للنظام
   { x: "قيد الانتظار", y: 120, color: "#ffc107" },
   { x: "ملغاة", y: 65, color: "#ff5252" },
 ];

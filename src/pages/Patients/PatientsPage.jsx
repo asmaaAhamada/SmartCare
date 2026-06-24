@@ -6,6 +6,7 @@ import {
   CloseCircleOutlined, 
   CalendarOutlined 
 } from "@ant-design/icons";
+import { baby_blue } from "../../color-main/color";
 
 const { Title, Text } = Typography;
 
@@ -17,7 +18,7 @@ const initialPatients = [
 
 export default function PatientsPage({ onNavigateToAppointments, onViewDetails }) {
   const [patients, setPatients] = useState(initialPatients);
-  const sidebarBlue = "#2ca8c9"; // اللون الأزرق الأساسي للنظام
+  const sidebarBlue =baby_blue; // اللون الأزرق الأساسي للنظام
 
   const handleToggleStatus = (id) => {
     setPatients(patients.map(p => {

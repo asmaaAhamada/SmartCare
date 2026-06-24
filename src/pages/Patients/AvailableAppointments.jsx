@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Table, Button, Typography, Select, Space, Card, Tag } from "antd";
 import { ArrowRightOutlined, CalendarOutlined, ClockCircleOutlined, UserOutlined } from "@ant-design/icons";
+import { baby_blue } from "../../color-main/color";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -14,7 +15,7 @@ const allAppointments = [
 
 export default function AvailableAppointments({ onBackToPatients }) {
   const [selectedPatientId, setSelectedPatientId] = useState("all");
-  const sidebarBlue = "#2ca8c9"; // اللون الأزرق الأساسي للنظام
+  const sidebarBlue =baby_blue; // اللون الأزرق الأساسي للنظام
 
   const filteredAppointments = selectedPatientId === "all" 
     ? allAppointments 

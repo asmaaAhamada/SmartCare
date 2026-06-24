@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import logo from "../../assets/image/logoo.jpg";
+import logo from "../../assets/image/Gemini_Generated_Image_vg2saqvg2saqvg2s.png";
 
 export default function LogoHeader() {
   return (

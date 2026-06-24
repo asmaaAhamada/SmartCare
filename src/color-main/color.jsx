@@ -20,7 +20,7 @@ export const darkblack = ' rgb(5, 5, 5)';
 
 
 ///
-export const baby_blue = "#2ca8c9"
+export const baby_blue = "#035970"
 export const baby_gray = 'rgba(136, 136, 136, 1)'
 export const gray11 ='rgba(113, 127, 166, 1)'
 export const gray12 ='rgba(74, 85, 101, 1)'

@@ -1,5 +1,6 @@
 import React from "react";
 import { VictoryChart, VictoryBar, VictoryGroup, VictoryAxis, VictoryTooltip } from "victory";
+import { baby_blue } from "../../color-main/color";
 
 const doctorsData = [
   { name: "يناير", newDocs: 12, activeDocs: 35, frozenDocs: 2 },
@@ -10,7 +11,7 @@ const doctorsData = [
 ];
 
 export default function DoctorsChart() {
-  const sidebarBlue = "#2ca8c9"; // اللون الأزرق الأساسي المعتمد لديكِ
+  const sidebarBlue =baby_blue; // اللون الأزرق الأساسي المعتمد لديكِ
 
   return (
     <div style={{ width: "100%", maxWidth: "700px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "8px" }}>
