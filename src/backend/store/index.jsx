@@ -11,6 +11,9 @@ import fetchDetailsAnnouncementReducer from '../slice/announcements/deteails'
 import fetchDoctorsReducer from '../slice/doctors/fetchAll'
 import deletDoctorsReducer from '../slice/doctors/delet'
 import fetchDetailsDoctorsReducer from '../slice/doctors/deteails'
+import Add_DoctorsReducer from '../slice/doctors/add'
+import vrifyDoctorsReducer from '../slice/doctors/verfiy'
+import fetchpatientsReducer from '../slice/patitents/fetchAll'
 const store = configureStore({
   reducer: {
  Log_in:Log_inReducer, 
@@ -24,7 +27,10 @@ const store = configureStore({
  fetchDetailsAnnouncement:fetchDetailsAnnouncementReducer,
  fetchDoctors:fetchDoctorsReducer,
  fetchDetailsDoctors:fetchDetailsDoctorsReducer,
- deletDoctors:deletDoctorsReducer
+ deletDoctors:deletDoctorsReducer,
+ Add_Doctors:Add_DoctorsReducer,
+ vrifyDoctors:vrifyDoctorsReducer,
+ fetchpatients:fetchpatientsReducer
  }
 })
 

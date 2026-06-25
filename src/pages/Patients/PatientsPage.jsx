@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Table, Button, Tooltip, Tag, Space, Avatar, Typography, Popconfirm } from "antd";
 import { 
   EyeOutlined, 
@@ -7,17 +7,23 @@ import {
   CalendarOutlined 
 } from "@ant-design/icons";
 import { baby_blue } from "../../color-main/color";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchpatients } from "../../backend/slice/patitents/fetchAll";
+import PatientsEmpty from "../empty/PatientsEmpty";
 
 const { Title, Text } = Typography;
 
-const initialPatients = [
-  { id: 1, name: "أحمد محمود العلي", avatar: "", email: "ahmed.ali@mail.com", phone: "0501112223", status: "active" },
-  { id: 2, name: "فاطمة عمر حسن", avatar: "", email: "fatima.h@mail.com", phone: "0504445556", status: "inactive" },
-  { id: 3, name: "يوسف خالد منصور", avatar: "", email: "youssef.m@mail.com", phone: "0507778889", status: "active" },
-];
+
 
 export default function PatientsPage({ onNavigateToAppointments, onViewDetails }) {
-  const [patients, setPatients] = useState(initialPatients);
+  const dispatch = useDispatch();
+    const { data: responseData, isLoading } = useSelector((state) => state.fetchpatients);
+  
+    console.log(responseData);
+  
+    useEffect(() => {
+      dispatch(fetchpatients());
+    }, [dispatch]);
   const sidebarBlue =baby_blue; // اللون الأزرق الأساسي للنظام
 
   const handleToggleStatus = (id) => {
@@ -28,7 +34,16 @@ export default function PatientsPage({ onNavigateToAppointments, onViewDetails }
       return p;
     }));
   };
-
+const patients =
+  responseData?.data?.map((patient) => ({
+    id: patient.id,
+    key: patient.id,
+    name: `${patient.profile?.first_name ?? ""} ${patient.profile?.last_name ?? ""}`,
+    avatar: patient.profile?.avatar_url,
+    email: patient.email,
+    phone: patient.profile?.phone_number,
+    status: patient.is_active ? "active" : "inactive",
+  })) || [];
   const columns = [
     {
       title: "المريض",
@@ -145,14 +160,18 @@ export default function PatientsPage({ onNavigateToAppointments, onViewDetails }
       </div>
 
       <div style={{ background: "#fff", borderRadius: "12px", boxShadow: "0 4px 16px rgba(0,0,0,0.02)" }}>
-        <Table 
-          className="blue-header-table"
-          columns={columns} 
-          dataSource={patients} 
-          rowKey="id"
-          scroll={{ x: true }}
-          pagination={{ pageSize: 5 }}
-        />
+      <Table
+  className="blue-header-table"
+  loading={isLoading}
+  columns={columns}
+  dataSource={patients}
+  rowKey="id"
+  scroll={{ x: true }}
+  pagination={{ pageSize: 5 }}
+  locale={{
+    emptyText: <PatientsEmpty />,
+  }}
+/>
       </div>
     </div>
   );

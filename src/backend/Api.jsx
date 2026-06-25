@@ -8,3 +8,5 @@ export const STATS =`/stats`
 export const DASHBOARD =`/dashboard`
 export const ANNONCEMNTS =`/announcements`
 export const DOCTORS = `/doctors`
+export const VERIFY =`/verify`
+export const PATIENTS =`/patients`
