@@ -16,7 +16,6 @@ import PermissionsPage from './pages/Roles/PermissionsPage';
 import PatientsDashboard from './pages/Patients/PatientsDashboard';
 import StatisticsPage from './pages/dashbord/StatisticsPage';
 import AnnouncementsPage from './pages/news/AnnouncementsPage';
-import AnnouncementDetails from './pages/news/AnnouncementDetails';
 import ProtectedRoute from './pages/auth/proctedRout';
 
 
@@ -45,7 +44,6 @@ export default function App({toggleMode, mode}){
           <Route path="doctor" element={<DoctorPage />} />
           <Route path="Patients" element={<PatientsDashboard />} />
           <Route path="News" element={<AnnouncementsPage />} />
-          <Route path="News/:id" element={<AnnouncementDetails />} />
           <Route path="Clinics" element={<ClinicsPage />} />
                     <Route path="roles" element={<PermissionsPage />} />
 

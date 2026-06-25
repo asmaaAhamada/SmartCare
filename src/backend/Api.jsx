@@ -3,3 +3,7 @@ export const LOG_IN='/login'
 export const ADMIN =`admin`
 export const ME =`/me`
 export const Products =`products`
+export const APOINNTS =`/appointments`
+export const STATS =`/stats`
+export const DASHBOARD =`/dashboard`
+export const ANNONCEMNTS =`/announcements`

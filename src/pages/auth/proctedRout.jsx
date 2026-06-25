@@ -16,10 +16,9 @@ export default function ProtectedRoute({ allowedRole }) {
   const dispatch = useDispatch();
 const state = useSelector((state) => state);
 
-console.log("REDUX STATE =", state);
 
   const userInfo = useSelector((state) => state.user?.userInfo);
-console.log(userInfo)
+// console.log(userInfo)
   const [loading, setLoading] = useState(true);
 
   
@@ -36,7 +35,7 @@ console.log(userInfo)
         }
 
         const response = await getData(`${BaseUrl}${ADMIN}${ME}`);
-console.log(response)
+// console.log(response)
 dispatch(setUserInfo(response.data));
       } catch (error) {
         console.log("SESSION ERROR =", error);
@@ -55,9 +54,9 @@ dispatch(setUserInfo(response.data));
     return <APPLoading />;
   }
 
-console.log("FINAL USER =", userInfo);
-console.log("ROLE =", userInfo?.role);
-console.log("ALLOWED =", allowedRole);
+// console.log("FINAL USER =", userInfo);
+// console.log("ROLE =", userInfo?.role);
+// console.log("ALLOWED =", allowedRole);
 
   // لا يوجد مستخدم
   if (!userInfo) {
