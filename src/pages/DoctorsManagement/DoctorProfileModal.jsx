@@ -1,29 +1,98 @@
 import React from "react";
-import { Modal, Avatar, Descriptions, Badge, Divider, Space } from "antd";
-import { MailOutlined, PhoneOutlined, SafetyCertificateOutlined, IdcardOutlined } from "@ant-design/icons";
+import {
+  Modal,
+  Avatar,
+  Badge,
+  Divider,
+  Spin,
+} from "antd";
+import { useSelector } from "react-redux";
 
-export default function DoctorProfileModal({ visible, onClose, doctor, sidebarBlue, mode }) {
-  if (!doctor) return null;
+export default function DoctorProfileModal({
+  visible,
+  onClose,
+  sidebarBlue,
+  mode,
+}) {
+  const { data: doctorData, isLoading } = useSelector(
+    (state) => state.fetchDetailsDoctors
+  );
 
-  // فحص إذا كان الوضع داكن أو فاتح
   const isDarkMode = mode === "dark";
 
-  // إعدادات الألوان بناءً على الوضع الحالي
   const colors = {
     modalBg: isDarkMode ? "#1f1f1f" : "#ffffff",
     titleText: isDarkMode ? "#ffffff" : "#333333",
     subText: isDarkMode ? "#aaaaaa" : "#666666",
-    descLabelBg: isDarkMode ? "#2a2a2a" : "#fafafa",
-    descValueBg: isDarkMode ? "#141414" : "#ffffff",
     descBorder: isDarkMode ? "#303030" : "#f0f0f0",
     descText: isDarkMode ? "#e0e0e0" : "#333333",
-    divider: isDarkMode ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.06)",
+    divider: isDarkMode
+      ? "rgba(255,255,255,0.12)"
+      : "rgba(0,0,0,0.06)",
   };
+
+  const InfoCard = ({ title, value }) => (
+    <div
+      style={{
+        background: isDarkMode ? "#262626" : "#fafafa",
+        border: `1px solid ${colors.descBorder}`,
+        borderRadius: "12px",
+        padding: "14px 16px",
+        minHeight: "75px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+      }}
+    >
+      <div
+        style={{
+          fontSize: "12px",
+          color: colors.subText,
+          marginBottom: "6px",
+          fontWeight: 500,
+        }}
+      >
+        {title}
+      </div>
+
+      <div
+        style={{
+          fontSize: "15px",
+          fontWeight: 600,
+          color: colors.descText,
+          wordBreak: "break-word",
+        }}
+      >
+        {value}
+      </div>
+    </div>
+  );
+
+  if (isLoading) {
+    return (
+      <Modal
+        open={visible}
+        footer={null}
+        onCancel={onClose}
+        centered
+      >
+        <div style={{ textAlign: "center", padding: "40px" }}>
+          <Spin size="large" />
+        </div>
+      </Modal>
+    );
+  }
 
   return (
     <Modal
       title={
-        <span style={{ fontWeight: 700, fontSize: "18px", color: colors.titleText }}>
+        <span
+          style={{
+            fontWeight: 700,
+            fontSize: "18px",
+            color: colors.titleText,
+          }}
+        >
           الملف الشخصي للطبيب
         </span>
       }
@@ -31,101 +100,184 @@ export default function DoctorProfileModal({ visible, onClose, doctor, sidebarBl
       onCancel={onClose}
       footer={null}
       centered
-      width={550}
-      // تطبيق الألوان الداكنة على بنية المودال الافتراضية لـ Ant Design
+      width={700}
       styles={{
         content: {
           backgroundColor: colors.modalBg,
-          color: colors.titleText,
         },
         header: {
           backgroundColor: colors.modalBg,
-        }
+        },
       }}
     >
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "10px 0" }}>
-        
-        {/* الصورة الشخصية */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
         <Avatar
-          src={doctor.avatar}
           size={90}
-          style={{ 
-            backgroundColor: isDarkMode ? `${sidebarBlue}30` : `${sidebarBlue}20`, 
-            color: sidebarBlue, 
-            fontSize: "36px", 
-            fontWeight: 600,
-            boxShadow: isDarkMode ? "0 4px 12px rgba(0,0,0,0.4)" : "0 4px 10px rgba(0,0,0,0.1)",
-            marginBottom: "16px"
+          style={{
+            backgroundColor: "#1677ff",
+            color: "#fff",
+            fontSize: "36px",
+            fontWeight: 700,
+            marginBottom: "12px",
           }}
         >
-          {doctor.name.split(" ")[1]?.charAt(0) || doctor.name.charAt(2)}
+          {doctorData?.first_name?.charAt(0)}
         </Avatar>
 
-        {/* الاسم والحالة */}
-        <h3 style={{ margin: "0 0 8px 0", fontWeight: 700, fontSize: "20px", color: colors.titleText }}>
-          {doctor.name}
-        </h3>
-        <Space size="small" style={{ marginBottom: "16px" }}>
+        <h2
+          style={{
+            margin: 0,
+            color: colors.titleText,
+            fontWeight: 700,
+          }}
+        >
+          {doctorData?.first_name} {doctorData?.last_name}
+        </h2>
+
+        <div style={{ marginTop: "10px" }}>
           <Badge
-            status={doctor.verified ? "success" : "warning"}
+            status={
+              doctorData?.is_verified
+                ? "success"
+                : "warning"
+            }
             text={
-              <span style={{ fontWeight: 600, color: doctor.verified ? "#4caf50" : "#ff9800" }}>
-                {doctor.verified ? "حساب موثق ومُعتمَد" : "قيد المراجعة"}
-              </span>
+              doctorData?.is_verified
+                ? "حساب موثق ومعتمد"
+                : "قيد المراجعة"
             }
           />
-        </Space>
+        </div>
 
-        <Divider style={{ margin: "8px 0 24px 0", borderColor: colors.divider }} />
+        <Divider
+          style={{
+            margin: "20px 0",
+            borderColor: colors.divider,
+          }}
+        />
 
-        {/* حاقن CSS مخصص لتعديل بوردرات وخلفيات Descriptions التابع لـ Ant Design بالوضع الداكن */}
-        <style>{`
-          .custom-desc-dark .ant-descriptions-item-label {
-            background-color: ${colors.descLabelBg} !important;
-            color: ${colors.titleText} !important;
-            border-inline-end: 1px solid ${colors.descBorder} !important;
-          }
-          .custom-desc-dark .ant-descriptions-item-content {
-            background-color: ${colors.descValueBg} !important;
-            color: ${colors.descText} !important;
-          }
-          .custom-desc-dark .ant-descriptions-view {
-            border: 1px solid ${colors.descBorder} !important;
-            border-radius: 8px !important;
-            overflow: hidden;
-          }
-          .custom-desc-dark .ant-descriptions-row {
-            border-bottom: 1px solid ${colors.descBorder} !important;
-          }
-          .custom-desc-dark .ant-descriptions-row:last-child {
-            border-bottom: none !important;
-          }
-        `}</style>
-
-        {/* تفاصيل البيانات الشخصية والمهنية */}
-        <Descriptions 
-          className="custom-desc-dark"
-          column={1} 
-          bordered 
-          size="middle" 
-          style={{ width: "100%" }}
+        <div
+          style={{
+            width: "100%",
+            display: "grid",
+            gridTemplateColumns: "repeat(2, 1fr)",
+            gap: "12px",
+          }}
         >
-          <Descriptions.Item label={<Space><IdcardOutlined style={{ color: sidebarBlue }} />التخصص</Space>}>
-            <span style={{ fontWeight: 600 }}>{doctor.specialty}</span>
-          </Descriptions.Item>
-          
-          <Descriptions.Item label={<Space><MailOutlined style={{ color: sidebarBlue }} />البريد الإلكتروني</Space>}>
-            <span style={{ color: colors.descText }}>{doctor.email}</span>
-          </Descriptions.Item>
-          
-          <Descriptions.Item label={<Space><PhoneOutlined style={{ color: sidebarBlue }} />رقم الهاتف</Space>}>
-            <span style={{ direction: "ltr", display: "inline-block" }}>{doctor.phone}</span>
-          </Descriptions.Item>
+          <InfoCard
+            title="التخصص"
+            value={doctorData?.specialty_ar}
+          />
 
-          <Descriptions.Item label={<Space><SafetyCertificateOutlined style={{ color: sidebarBlue }} />الرقم المرجعي</Space>}>
-            <span style={{ color: colors.subText }}>DOC-2026-00{doctor.id}</span>
-          </Descriptions.Item>
-        </Descriptions>
+          <InfoCard
+            title="رقم الترخيص"
+            value={doctorData?.license_number}
+          />
+
+          <InfoCard
+            title="البريد الإلكتروني"
+            value={doctorData?.email}
+          />
+
+          <InfoCard
+            title="رقم الهاتف"
+            value={doctorData?.phone || "غير متوفر"}
+          />
+
+          <InfoCard
+            title="سنوات الخبرة"
+            value={`${doctorData?.years_experience} سنوات`}
+          />
+
+          <InfoCard
+            title="التقييم"
+            value={`⭐ ${doctorData?.rating}`}
+          />
+
+          <InfoCard
+            title="سعر الاستشارة"
+            value={`${doctorData?.consultation_fee?.toLocaleString()} ل.س`}
+          />
+
+          <InfoCard
+            title="عدد التقييمات"
+            value={doctorData?.total_reviews}
+          />
+
+          <InfoCard
+            title="الخدمة المنزلية"
+            value={
+              doctorData?.home_service
+                ? "متاحة"
+                : "غير متاحة"
+            }
+          />
+
+          <InfoCard
+            title="استشارة فيديو"
+            value={
+              doctorData?.video_consultation
+                ? "متاحة"
+                : "غير متاحة"
+            }
+          />
+
+          <InfoCard
+            title="الحالة"
+            value={
+              doctorData?.status === "active"
+                ? "نشط"
+                : "غير نشط"
+            }
+          />
+
+          <InfoCard
+            title="التوثيق"
+            value={
+              doctorData?.is_verified
+                ? "موثق"
+                : "غير موثق"
+            }
+          />
+        </div>
+
+        <div
+          style={{
+            width: "100%",
+            marginTop: "16px",
+            background: isDarkMode
+              ? "#262626"
+              : "#fafafa",
+            border: `1px solid ${colors.descBorder}`,
+            borderRadius: "12px",
+            padding: "16px",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "13px",
+              color: colors.subText,
+              marginBottom: "10px",
+            }}
+          >
+            نبذة تعريفية
+          </div>
+
+          <div
+            style={{
+              color: colors.descText,
+              lineHeight: 1.8,
+            }}
+          >
+            {doctorData?.bio}
+          </div>
+        </div>
       </div>
     </Modal>
   );

@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense } from "react";
+import React, { useState, lazy, Suspense, useEffect } from "react";
 import { Table, Button, Tooltip, Avatar, Popconfirm, Typography, Space, Spin } from "antd";
 import { 
   PlusOutlined, 
@@ -8,101 +8,147 @@ import {
   DeleteOutlined 
 } from "@ant-design/icons";
 import { baby_blue } from "../../color-main/color";
-
+import { useDispatch, useSelector } from "react-redux";
+import { fetchDoctors } from "../../backend/slice/doctors/fetchAll";
+import {
+  ManOutlined,
+  WomanOutlined,
+} from "@ant-design/icons";
+import { fetchDetailsDoctors } from "../../backend/slice/doctors/deteails";
+import DeleteDoctorsModal from "./deletDoctors";
 // استدعاء الكومبوننت بشكل Lazy لتخفيف حجم الكود المبدئي للشاشة
 const DoctorProfileModal = lazy(() => import("./DoctorProfileModal"));
 
 const { Title } = Typography;
 
-const initialDoctors = [
-  {
-    key: 1,
-    id: 1,
-    name: "د. عبد الله الشمري",
-    specialty: "طب وجراحة القلب",
-    email: "a.shammari@care.com",
-    phone: "0501234567",
-    avatar: "", 
-    verified: true,
-  },
-  {
-    key: 2,
-    id: 2,
-    name: "د. سارة الأحمد",
-    specialty: "طب الأطفال وحديثي الولادة",
-    email: "s.ahmed@care.com",
-    phone: "0507654321",
-    avatar: "",
-    verified: false,
-  },
-  {
-    key: 3,
-    id: 3,
-    name: "د. خالد منصور",
-    specialty: "جراحة العظام والمفاصل",
-    email: "k.mansour@care.com",
-    phone: "0509876543",
-    avatar: "",
-    verified: true,
-  },
-];
+
 
 export default function DoctorPage() {
-  const [doctors, setDoctors] = useState(initialDoctors);
-  
+   const dispatch = useDispatch();
+    const { data: responseData, isLoading } = useSelector((state) => state.fetchDoctors);
+
+console.log(responseData)
+ useEffect(() => {
+    dispatch(fetchDoctors());
+    ;
+  }, [dispatch]);
+
+
   // حالات التحكم بالمودال الكسول
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
-
+const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const sidebarBlue =baby_blue; // لون السايد بار المعتمد
 
   const handleAddDoctor = () => console.log("إضافة طبيب");
   const handleEdit = (id) => console.log("تعديل", id);
   const handleVerify = (id) => console.log("توثيق", id);
   
-  const handleDelete = (id) => {
-    setDoctors(doctors.filter((doc) => doc.id !== id));
-  };
+ const handleDelete = (doctor) => {
+  setSelectedDoctor(doctor);
+  setIsDeleteModalOpen(true);
+};
 
   // عند الضغط على أيقونة العين (View)
-  const handleView = (doctor) => {
-    setSelectedDoctor(doctor);
-    setIsModalOpen(true);
-  };
+ const handleView = (doctor) => {
+  dispatch(fetchDetailsDoctors(doctor.id));
+  setIsModalOpen(true);
+};
 
   const columns = [
-    {
-      title: "الطبيب",
-      dataIndex: "name",
-      key: "name",
-      render: (text, record) => (
-        <Space size="middle">
-          <Avatar 
-            src={record.avatar} 
-            style={{ backgroundColor: `${sidebarBlue}20`, color: sidebarBlue, fontWeight: 600 }}
-          >
-            {record.name.split(" ")[1]?.charAt(0) || record.name.charAt(2)}
-          </Avatar>
-          <span style={{ fontWeight: 600, color: "#444" }}>{text}</span>
-        </Space>
-      ),
-    },
-    {
-      title: "التخصص",
-      dataIndex: "specialty",
-      key: "specialty",
-    },
-    {
-      title: "البريد الإلكتروني",
-      dataIndex: "email",
-      key: "email",
-    },
-    {
-      title: "رقم الهاتف",
-      dataIndex: "phone",
-      key: "phone",
-      render: (text) => <span style={{ direction: "ltr", display: "inline-block" }}>{text}</span>,
-    },
+  {
+    title: "الاسم",
+    dataIndex: "name",
+    key: "name",
+    render: (text, record) => (
+      <Space>
+        <Avatar
+  src={record.avatar}
+  style={{
+    backgroundColor:
+      record.gender === "male"
+        ? "#e6f4ff"
+        : "#fff0f6",
+
+    color:
+      record.gender === "male"
+        ? "#1677ff"
+        : "#d63384",
+
+    fontWeight: 700,
+  }}
+>
+  {record.name?.charAt(0)}
+</Avatar>
+        {text}
+      </Space>
+    ),
+  },
+  {
+    title: "التخصص",
+    dataIndex: "specialty",
+    key: "specialty",
+  },
+  
+{
+  title: "الجنس",
+  dataIndex: "gender",
+  key: "gender",
+  render: (gender) => (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "6px",
+        padding: "4px 12px",
+        borderRadius: "20px",
+        backgroundColor:
+          gender === "male" ? "#e6f4ff" : "#fff0f6",
+        color:
+          gender === "male" ? "#1677ff" : "#d63384",
+        fontWeight: 600,
+      }}
+    >
+      {gender === "male" ? (
+        <>
+          <ManOutlined />
+          ذكر
+        </>
+      ) : (
+        <>
+          <WomanOutlined />
+          أنثى
+        </>
+      )}
+    </span>
+  ),
+},
+ 
+  {
+    title: "التقييم",
+    dataIndex: "rating",
+    key: "rating",
+  },
+  
+  {
+    title: "الحالة",
+    dataIndex: "verified",
+    key: "verified",
+    render: (verified) => (
+      <span
+        style={{
+          color: verified ? "#52c41a" : "#faad14",
+          fontWeight: 600,
+        }}
+      >
+        {verified ? "موثق" : "غير موثق"}
+      </span>
+    ),
+  },
+  
+ 
+     
+  
     {
       title: "العمليات والإجراءات",
       key: "actions",
@@ -141,26 +187,35 @@ export default function DoctorPage() {
           </Tooltip>
 
           <Tooltip title="حذف الطبيب">
-            <Popconfirm
-              title="حذف الطبيب"
-              description="هل أنت متأكد من حذف هذا الطبيب؟"
-              onConfirm={() => handleDelete(record.id)}
-              okText="نعم"
-              cancelText="تراجع"
-              placement="topRight"
-            >
-              <Button 
-                type="text" 
-                danger 
-                icon={<DeleteOutlined />} 
-                style={{ backgroundColor: "#ff4d4f10" }}
-              />
-            </Popconfirm>
+           <Tooltip title="حذف الطبيب">
+  <Button
+    type="text"
+    danger
+    icon={<DeleteOutlined />}
+    onClick={() => handleDelete(record)}
+    style={{
+      backgroundColor: "#ff4d4f10",
+    }}
+  />
+</Tooltip>
           </Tooltip>
         </Space>
       ),
-    },
-  ];
+    },     
+    
+  
+];
+const doctors =
+  responseData?.data?.map((doctor) => ({
+    key: doctor.id,
+    id: doctor.id,
+    name: `${doctor.user?.profile?.first_name} ${doctor.user?.profile?.last_name}`,
+    gender: doctor.user?.profile?.gender,
+    specialty: doctor.specialty?.name_ar,
+    rating: doctor.rating,
+    avatar: doctor.user?.profile?.avatar_url,
+    verified: doctor.is_verified,
+  })) || [];
 
   return (
     <div style={{ width: "100%", direction: "rtl", padding: "16px" }}>
@@ -210,6 +265,8 @@ export default function DoctorPage() {
 
       <Table 
         className="custom-antd-table"
+          loading={isLoading}
+
         columns={columns} 
         dataSource={doctors} 
         scroll={{ x: 700 }}
@@ -235,6 +292,20 @@ export default function DoctorPage() {
           sidebarBlue={sidebarBlue}
         />
       </Suspense>
+      <DeleteDoctorsModal
+  open={isDeleteModalOpen}
+  doctorData={selectedDoctor}
+  onCancel={() => {
+    setIsDeleteModalOpen(false);
+    setSelectedDoctor(null);
+  }}
+  onSuccess={() => {
+    dispatch(fetchDoctors());
+
+    setIsDeleteModalOpen(false);
+    setSelectedDoctor(null);
+  }}
+/>
     </div>
   );
 }

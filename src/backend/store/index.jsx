@@ -8,6 +8,9 @@ import AddAnnouncementReducer from '../slice/announcements/add'
 import editeAnnouncementReducer from '../slice/announcements/EDITE'
 import deletAnnouncementReducer from '../slice/announcements/delet'
 import fetchDetailsAnnouncementReducer from '../slice/announcements/deteails'
+import fetchDoctorsReducer from '../slice/doctors/fetchAll'
+import deletDoctorsReducer from '../slice/doctors/delet'
+import fetchDetailsDoctorsReducer from '../slice/doctors/deteails'
 const store = configureStore({
   reducer: {
  Log_in:Log_inReducer, 
@@ -19,6 +22,9 @@ const store = configureStore({
  editeAnnouncement:editeAnnouncementReducer,
  deletAnnouncement:deletAnnouncementReducer,
  fetchDetailsAnnouncement:fetchDetailsAnnouncementReducer,
+ fetchDoctors:fetchDoctorsReducer,
+ fetchDetailsDoctors:fetchDetailsDoctorsReducer,
+ deletDoctors:deletDoctorsReducer
  }
 })
 
