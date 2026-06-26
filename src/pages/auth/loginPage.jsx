@@ -7,7 +7,6 @@ import Typography from '@mui/material/Typography';
 import { useTheme } from "@emotion/react";
 import { Alert, Button, LinearProgress, IconButton, alpha } from "@mui/material"; 
 import InputAdornment from '@mui/material/InputAdornment';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import MailOutlineIcon from '@mui/icons-material/MailOutline'; 
 import Visibility from '@mui/icons-material/Visibility'; 
 import VisibilityOff from '@mui/icons-material/VisibilityOff'; 
@@ -21,13 +20,13 @@ import { clearError, Log_in, setformInfo, setError } from '../../backend/slice/a
 import bgImage from '../../assets/image/image.jpg'; 
 
 export default function LoginPage() {
-  const medicalTealColor =baby_blue; 
+  const medicalTealColor = baby_blue; 
   const arabicFont = "'Cairo', 'Tajawal', 'Segoe UI', sans-serif";
 
   const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);
 
-  const {  password, email } = useSelector((state) => state.Log_in.formInfo);
+  const { password, email } = useSelector((state) => state.Log_in.formInfo);
   const { isLoading, error } = useSelector((state) => state.Log_in);
 
   const dispatch = useDispatch();
@@ -35,7 +34,7 @@ export default function LoginPage() {
 
   const handleClickShowPassword = () => setShowPassword((prev) => !prev);
 
- async function Login(e) {
+  async function Login(e) {
     e.preventDefault();
     dispatch(clearError());
 
@@ -55,41 +54,34 @@ export default function LoginPage() {
     if (hasError) return;
 
     try {
-      // هنا قمنا بحفظ النتيجة في resultAction مباشرة بعد عمل unwrap
       const response = await dispatch(Log_in()).unwrap();
-      
-      // بما أننا استخدمنا unwrap، فالوصول للـ role يكون مباشرة من الاستجابة الناجحة
       const role = response?.role; 
 
-     if (response?.data?.admin?.role === "admin") {
-  navigate("/dashbord");
-
+      if (response?.data?.admin?.role === "admin") {
+        navigate("/dashbord");
       } else {
         console.log("تم تسجيل الدخول ولكن الصلاحية ليست أدمن:", role);
       }
-
     } catch (apiError) {
-      // الـ unwrap سيرسل الخطأ تلقائياً إلى هنا عند الفشل
       console.error("خطأ التسجيل من الباكيند:", apiError);
     }
   } 
-    
-  
 
-  // ستايل الحقول مع ضبط المحاذاة والخطوط
+  // 🌟 تعديل الستاتيل الموحد للحقول لضمان ضبط الليبل والنوتش لليمين دون تداخل مع الأيقونات اليسارية
   const textFieldStyles = {
-    "& .MuiInputLabel-r// هنا تم إغلاق الدالة بشكل صحيح تماماً 👍oot": { 
+    "& .MuiInputLabel-root": { 
       fontFamily: arabicFont, 
       color: "text.disabled", 
-      right: 16, 
+      right: 16, // وضع الليبل الافتراضي باليمين تماماً
       left: "auto",
-      transformOrigin: "right"
+      transformOrigin: "top right"
     },
     "& .MuiInputLabel-shrink": {
-      transform: "translate(-14px, -9px) scale(0.75)" 
+      transform: "translate(0, -9px) scale(0.75)", // ضبط تموضع الليبل عند الارتفاع لأعلى
+      right: 16,
     },
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": { textAlign: "right" }
+    "& .MuiOutlinedInput-notchedOutline": {
+      textAlign: "right" // نقل فتحة خط الحقل (Notch) إلى جهة اليمين بدلاً من اليسار
     },
     "& .MuiFormHelperText-root": {
       fontFamily: arabicFont,
@@ -176,10 +168,10 @@ export default function LoginPage() {
             alignItems: 'center',
             backgroundColor: 'white',
             p: { xs: 3, md: 4 },
-            direction: 'rtl'
+            direction: 'rtl' // تفعيل اتجاه RTL للقسم كاملاً
           }}
         >
-          {/* الجملة الترحيبية المحدثة باللون الطبي المطابق للملابس */}
+          {/* الجملة الترحيبية */}
           <Box sx={{ textAlign: 'center', mb: 3, width: '100%' }}>
             <Typography sx={{ fontWeight: 800, fontSize: '1.6rem', color: medicalTealColor, fontFamily: arabicFont }}>
               مرحباً بك مجدداً!
@@ -189,10 +181,10 @@ export default function LoginPage() {
             </Typography>
           </Box>
 
-          {/* البوكس المخصص لاحتواء الحقول بشكل منظم داخلياً */}
+          {/* البوكس المخصص لاحتواء الحقول */}
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, width: '100%' }}>
             
-            {/* حقل البريد الإلكتروني مع نقل الأيقونة لجهة اليسار (endAdornment) */}
+            {/* 🌟 حقل البريد الإلكتروني - تم نقل الأيقونة لـ startAdornment لتظهر يساراً */}
             <TextField
               value={email}
               onChange={(e) => dispatch(setformInfo({ email: e.target.value }))}
@@ -203,8 +195,8 @@ export default function LoginPage() {
               autoComplete="new-password"
               sx={textFieldStyles}
               InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
+                startAdornment: (
+                  <InputAdornment position="start">
                     <MailOutlineIcon sx={{ color: medicalTealColor, mx: 0.5 }} />
                   </InputAdornment>
                 ),
@@ -214,9 +206,7 @@ export default function LoginPage() {
               }}
             />
 
-           
-
-            {/* حقل كلمة المرور والأيقونة مرتبة يساراً بشكل تلقائي كالعين */}
+            {/* 🌟 حقل كلمة المرور - تم نقل أيقونة العين لـ startAdornment لتظهر يساراً */}
             <TextField
               type={showPassword ? 'text' : 'password'}
               value={password}
@@ -228,9 +218,9 @@ export default function LoginPage() {
               autoComplete="new-password"
               sx={textFieldStyles}
               InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={handleClickShowPassword} edge="end">
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <IconButton onClick={handleClickShowPassword} edge="start">
                       {showPassword ? <Visibility sx={{ color: medicalTealColor }}/> : <VisibilityOff sx={{ color: medicalTealColor }} />}
                     </IconButton>
                   </InputAdornment>
@@ -241,14 +231,14 @@ export default function LoginPage() {
               }}
             />
 
-            {/* خطأ الـ API الفني عند حدوث مشكلة */}
+            {/* خطأ الـ API */}
             {error.general && (
               <Alert severity="error" sx={{ fontFamily: arabicFont, mt: 1 }}>
                 {error.general}
               </Alert>
             )}
 
-            {/* منطقة زر تسجيل الدخول أو لودر التحميل اللحظي بلون الثيم الجديد */}
+            {/* زر تسجيل الدخول أو لودر التحميل */}
             <Box sx={{ mt: 1 }}>
               {isLoading ? (
                 <LinearProgress sx={{ backgroundColor: medicalTealColor, borderRadius: 1, height: 5 }} />

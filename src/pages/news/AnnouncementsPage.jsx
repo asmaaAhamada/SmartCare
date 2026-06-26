@@ -71,8 +71,13 @@ export default function AnnouncementsPage() {
 
       {/* التحكم بالعرض بناءً على حالة الـ API للكل */}
       {isLoading ? (
-        <AnnouncementLoader color={sidebarBlue} />
-      ) : announcements.length === 0 ? (
+ <Row gutter={[20, 20]}>
+      {Array.from({ length: 6 }).map((_, index) => (
+        <Col xs={24} lg={12} key={index}>
+          <Card loading />
+        </Col>
+      ))}
+    </Row>      ) : announcements.length === 0 ? (
         <AnnouncementEmpty />
       ) : (
         <Row gutter={[20, 24]}>

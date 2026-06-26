@@ -14,6 +14,15 @@ import fetchDetailsDoctorsReducer from '../slice/doctors/deteails'
 import Add_DoctorsReducer from '../slice/doctors/add'
 import vrifyDoctorsReducer from '../slice/doctors/verfiy'
 import fetchpatientsReducer from '../slice/patitents/fetchAll'
+import fetchRolesReducer from '../slice/pirmission/fetchAll'
+import deletRolesReducer from '../slice/pirmission/delet'
+import fetchClinicReducer from '../slice/clinic/fetchAll'
+import AddClinicReducer from '../slice/clinic/addClinc'
+import fetchDetailsclincsReducer from '../slice/clinic/deteails'
+import vrifyClinicReducer from '../slice/clinic/verfiy'
+import DeleteClinicReducer from '../slice/clinic/delet'
+import fetchDetailsRolesRedcer from '../slice/pirmission/deteails'
+import fetchAllRolesReducer from '../slice/pirmission/groupfitsh'
 const store = configureStore({
   reducer: {
  Log_in:Log_inReducer, 
@@ -30,7 +39,16 @@ const store = configureStore({
  deletDoctors:deletDoctorsReducer,
  Add_Doctors:Add_DoctorsReducer,
  vrifyDoctors:vrifyDoctorsReducer,
- fetchpatients:fetchpatientsReducer
+ fetchpatients:fetchpatientsReducer,
+ fetchRoles:fetchRolesReducer,
+ deletRoles:deletRolesReducer,
+ fetchClinic:fetchClinicReducer,
+ AddClinic:AddClinicReducer,
+ fetchDetailsclincs:fetchDetailsclincsReducer,
+ vrifyClinic:vrifyClinicReducer,
+ DeleteClinic:DeleteClinicReducer,
+ fetchDetailsRoles:fetchDetailsRolesRedcer,
+ fetchAllRoles:fetchAllRolesReducer
  }
 })
 

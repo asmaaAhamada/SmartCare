@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Row, Col, Card, Button, Tooltip, Popconfirm, Typography, Space, Switch, Tag } from "antd";
 import { 
   PlusOutlined, 
@@ -7,49 +7,21 @@ import {
   ArrowRightOutlined,
   SaveOutlined,
   SafetyOutlined,
-  UserOutlined,
+  UserOutlined,UnorderedListOutlined,
   LockOutlined
 } from "@ant-design/icons";
+import { EyeOutlined } from "@ant-design/icons";
 import { baby_blue } from "../../color-main/color";
+import { fetchRoles } from "../../backend/slice/pirmission/fetchAll";
+import { useDispatch, useSelector } from "react-redux";
+import RolesEmpty from "../empty/RolesEmpty";
+import DeleteRolesModal from "./deletRole";
+import RoleDetailsPage from "./deteails";
+import PermissionsCatalogPage from "./PermissionsListPage";
 
 const { Title, Text } = Typography;
 
-// بيانات وهمية متكاملة للأدوار والصلاحيات المرتبطة بها
-const initialRoles = [
-  {
-    id: 1,
-    name: "مدير النظام (Admin)",
-    description: "يمتلك كامل الصلاحيات لإدارة العيادات، الأطباء، الحسابات، والتقارير المادية.",
-    userCount: 3,
-    permissions: {
-      clinics_view: true, clinics_create: true, clinics_edit: true, clinics_delete: true,
-      doctors_view: true, doctors_create: true, doctors_edit: true, doctors_delete: true,
-      patients_view: true, patients_delete: true
-    }
-  },
-  {
-    id: 2,
-    name: "طبيب (Doctor)",
-    description: "صلاحيات مخصصة للأطباء لرؤية ملفات المرضى الخاصة بهم وإدارة المواعيد.",
-    userCount: 12,
-    permissions: {
-      clinics_view: true, clinics_create: false, clinics_edit: false, clinics_delete: false,
-      doctors_view: true, doctors_create: false, doctors_edit: false, doctors_delete: false,
-      patients_view: true, patients_delete: false
-    }
-  },
-  {
-    id: 3,
-    name: "موظف استقبال (Receptionist)",
-    description: "إدخال بيانات المرضى الجدد وحجز المواعيد وتوجيههم للعيادات.",
-    userCount: 5,
-    permissions: {
-      clinics_view: true, clinics_create: false, clinics_edit: false, clinics_delete: false,
-      doctors_view: true, doctors_create: false, doctors_edit: false, doctors_delete: false,
-      patients_view: true, patients_delete: false
-    }
-  }
-];
+
 
 // أسماء الصلاحيات باللغة العربية لعرضها بشكل مفهوم للمستخدم
 const permissionLabels = {
@@ -66,7 +38,33 @@ const permissionLabels = {
 };
 
 export default function PermissionsPage() {
-  const [roles, setRoles] = useState(initialRoles);
+  const [viewPermissions,setViewPermissions]=useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+const [selectedRole, setSelectedRole] = useState(null);
+   const dispatch = useDispatch();
+   const [viewRoleId, setViewRoleId] = useState(null);
+      const { data: responseData, isLoading } = useSelector((state) => state.fetchRoles);
+    
+      console.log(responseData);
+    
+      useEffect(() => {
+        dispatch(fetchRoles());
+      }, [dispatch]);
+
+
+
+const roles =
+  responseData?.data?.map((role) => ({
+    id: role.id,
+    name: role.display_name,
+    systemName: role.name,
+    description:
+      role.description || "لا يوجد وصف لهذا الدور.",
+    userCount: role.users_count,
+    permissionsCount: role.permissions_count,
+  })) || [];
+
+
   const [editingRole, setEditingRole] = useState(null); // الدور الحالي الذي يتم تعديله
   
   const sidebarBlue =baby_blue; // لون السايد بار المعتمد لديكِ
@@ -184,6 +182,21 @@ export default function PermissionsPage() {
   // -----------------------------------------------------------------
   // الشاشة رقم 1: شاشة العرض الرئيسية لشبكة الكروت (الأدوار)
   // -----------------------------------------------------------------
+  if (viewRoleId) {
+    return (
+        <RoleDetailsPage
+            id={viewRoleId}
+            onBack={() => setViewRoleId(null)}
+        />
+    );
+}
+if(viewPermissions){
+    return(
+        <PermissionsCatalogPage
+            onBack={()=>setViewPermissions(false)}
+        />
+    )
+}
   return (
     <div style={{ width: "100%", direction: "rtl", padding: "16px" }}>
       
@@ -203,6 +216,22 @@ export default function PermissionsPage() {
           <Text style={{ color: "#777", fontSize: "14px" }}>تحديد الصلاحيات الممنوحة لكل فئة مستخدمين داخل النظام الطبي</Text>
         </div>
 
+
+
+<Space>
+ <Button
+    icon={<UnorderedListOutlined />}
+    style={{
+      borderColor: sidebarBlue,
+      color: sidebarBlue,
+      height: 42,
+      borderRadius: 10,
+      fontWeight: 600,
+    }}
+    onClick={() => setViewPermissions(true)}
+  >
+    عرض جميع الصلاحيات
+  </Button>
         <Button
           type="primary"
           icon={<PlusOutlined />}
@@ -218,6 +247,7 @@ export default function PermissionsPage() {
         >
           إنشاء دور جديد
         </Button>
+        </Space>
       </div>
 
       {/* حاقن CSS مخصص لتأثير العمق والحركية عند تمرير الماوس فوق الكارد */}
@@ -241,11 +271,20 @@ export default function PermissionsPage() {
       `}</style>
 
       {/* شبكة الكروت (Responsive Grid) */}
+      {
+!isLoading && roles.length === 0 ? (
+    <RolesEmpty />
+) : (
       <Row gutter={[24, 24]}>
-        {roles.map((role) => {
+        {isLoading
+    ? Array.from({ length: 6 }).map((_, index) => (
+        <Col xs={24} sm={12} lg={8} key={index}>
+            <Card loading />
+        </Col>
+    )):
+        roles.map((role) => {
           // حساب كم صلاحية مفعلة داخل الكارد
-          const activePermsCount = Object.values(role.permissions).filter(Boolean).length;
-
+const activePermsCount = role.permissionsCount;
           return (
             <Col xs={24} sm={12} lg={8} key={role.id}>
               <Card
@@ -264,6 +303,13 @@ export default function PermissionsPage() {
                 
                 // العمليات على الكارد (تعديل وحذف)
                 actions={[
+                   <Tooltip title="عرض التفاصيل">
+        <Button
+            type="text"
+            icon={<EyeOutlined style={{ color: "#1677ff" }} />}
+            onClick={() => setViewRoleId(role.id)}
+        />
+    </Tooltip>,
                   <Tooltip title="تعديل وإدارة الصلاحيات">
                     <Button 
                       type="text" 
@@ -275,25 +321,19 @@ export default function PermissionsPage() {
                     </Button>
                   </Tooltip>,
                   
-                  <Popconfirm
-                    title="حذف هذا الدور"
-                    description="هل أنت متأكد من حذف هذا الدور بالكامل؟"
-                    onConfirm={() => handleDeleteRole(role.id)}
-                    okText="نعم"
-                    cancelText="تراجع"
-                    placement="bottom"
-                    disabled={role.id === 1} // منع حذف مدير النظام الأساسي للحماية
-                  >
-                    <Tooltip title={role.id === 1 ? "لا يمكن حذف المدير الأساسي" : "حذف الدور"}>
-                      <Button 
-                        type="text" 
-                        danger 
-                        icon={<DeleteOutlined style={{ fontSize: "16px" }} />} 
-                        disabled={role.id === 1}
-                        style={{ opacity: role.id === 1 ? 0.3 : 1 }}
-                      />
-                    </Tooltip>
-                  </Popconfirm>
+                 <Tooltip title={role.id === 3 ? "لا يمكن حذف مدير النظام" : "حذف الدور"}>
+  <Button
+    type="text"
+    danger
+    icon={<DeleteOutlined style={{ fontSize: 16 }} />}
+    disabled={role.id === 3}
+    style={{ opacity: role.id === 3 ? 0.3 : 1 }}
+    onClick={() => {
+      setSelectedRole(role);
+      setDeleteModalOpen(true);
+    }}
+  />
+</Tooltip>
                 ]}
               >
                 {/* محتوى الكارد الداخلي */}
@@ -355,7 +395,21 @@ export default function PermissionsPage() {
             </Col>
           );
         })}
-      </Row>
+      </Row>)}
+      <DeleteRolesModal
+    open={deleteModalOpen}
+    RolesData={selectedRole}
+    onCancel={() => {
+        setDeleteModalOpen(false);
+        setSelectedRole(null);
+    }}
+    onSuccess={() => {
+        dispatch(fetchRoles());
+
+        setDeleteModalOpen(false);
+        setSelectedRole(null);
+    }}
+/>
     </div>
   );
 }

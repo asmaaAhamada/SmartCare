@@ -15,6 +15,7 @@
     "@babel/runtime": "^7.24.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@lottiefiles/dotlottie-react": "^0.19.5",
     "@mui/icons-material": "^5.14.8",
     "@mui/material": "^5.14.8",
     "@reduxjs/toolkit": "^1.9.5",
