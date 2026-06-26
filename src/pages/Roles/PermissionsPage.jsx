@@ -18,6 +18,8 @@ import RolesEmpty from "../empty/RolesEmpty";
 import DeleteRolesModal from "./deletRole";
 import RoleDetailsPage from "./deteails";
 import PermissionsCatalogPage from "./PermissionsListPage";
+import AddRoleModal from "./AddRoleModal";
+import EditRoleModal from "./update";
 
 const { Title, Text } = Typography;
 
@@ -38,8 +40,12 @@ const permissionLabels = {
 };
 
 export default function PermissionsPage() {
+  const [editingRole,setEditingRole]=useState(null);
+
+const [openEditRole,setOpenEditRole]=useState(false);
   const [viewPermissions,setViewPermissions]=useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [openAddRole, setOpenAddRole] = useState(false);
 const [selectedRole, setSelectedRole] = useState(null);
    const dispatch = useDispatch();
    const [viewRoleId, setViewRoleId] = useState(null);
@@ -58,126 +64,20 @@ const roles =
     id: role.id,
     name: role.display_name,
     systemName: role.name,
-    description:
-      role.description || "لا يوجد وصف لهذا الدور.",
+    description: role.description || "لا يوجد وصف لهذا الدور.",
     userCount: role.users_count,
     permissionsCount: role.permissions_count,
+    permissions: role.permissions || [],
   })) || [];
 
 
-  const [editingRole, setEditingRole] = useState(null); // الدور الحالي الذي يتم تعديله
   
   const sidebarBlue =baby_blue; // لون السايد بار المعتمد لديكِ
 
-  // إجرائيات الإنشاء، الحذف، والتحديث
-  const handleCreateRole = () => {
-    const newId = roles.length + 1;
-    const newRole = {
-      id: newId,
-      name: `دور جديد رقم ${newId}`,
-      description: "اضغط على تعديل لتخصيص الوصف والصلاحيات الخاصة بهذا الدور.",
-      userCount: 0,
-      permissions: {
-        clinics_view: false, clinics_create: false, clinics_edit: false, clinics_delete: false,
-        doctors_view: false, doctors_create: false, doctors_edit: false, doctors_delete: false,
-        patients_view: false, patients_delete: false
-      }
-    };
-    setRoles([...roles, newRole]);
-  };
+ 
+ 
 
-  const handleDeleteRole = (id) => {
-    setRoles(roles.filter(role => role.id !== id));
-  };
-
-  const handleTogglePermission = (permKey) => {
-    setEditingRole({
-      ...editingRole,
-      permissions: {
-        ...editingRole.permissions,
-        [permKey]: !editingRole.permissions[permKey]
-      }
-    });
-  };
-
-  const handleSavePermissions = () => {
-    setRoles(roles.map(r => r.id === editingRole.id ? editingRole : r));
-    setEditingRole(null); // العودة لشبكة الكروت
-  };
-
-  // -----------------------------------------------------------------
-  // الشاشة رقم 2: شاشة تعديل صلاحيات دور معين (تفتح عند الضغط على تعديل)
-  // -----------------------------------------------------------------
-  if (editingRole) {
-    return (
-      <div style={{ width: "100%", direction: "rtl", padding: "16px" }}>
-        
-        {/* زر العودة */}
-        <Button 
-          type="link" 
-          icon={<ArrowRightOutlined />} 
-          onClick={() => setEditingRole(null)}
-          style={{ color: sidebarBlue, fontSize: "16px", fontWeight: 600, padding: 0, marginBottom: "20px" }}
-        >
-          العودة للأدوار والصلاحيات
-        </Button>
-
-        <Card 
-          style={{ borderRadius: "14px", boxShadow: "0 6px 20px rgba(0,0,0,0.04)", border: "1px solid #eef2f5" }}
-          title={
-            <Space>
-              <LockOutlined style={{ color: sidebarBlue }} />
-              <span style={{ fontWeight: 700 }}>تعديل صلاحيات الوصول: {editingRole.name}</span>
-            </Space>
-          }
-          extra={
-            <Button 
-              type="primary" 
-              icon={<SaveOutlined />} 
-              onClick={handleSavePermissions}
-              style={{ backgroundColor: sidebarBlue, borderColor: sidebarBlue, borderRadius: "8px", fontWeight: 600 }}
-            >
-              حفظ التغييرات
-            </Button>
-          }
-        >
-          <Row gutter={[24, 24]}>
-            {/* قسم إدارة العيادات */}
-            <Col xs={24} md={12}>
-              <Card type="inner" title="إدارة العيادات" style={{ borderRadius: "12px", border: "1px solid #eef2f5" }}>
-                {Object.keys(editingRole.permissions).filter(k => k.startsWith("clinics_")).map(permKey => (
-                  <div key={permKey} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: "1px solid #f5f5f5" }}>
-                    <Text strong style={{ color: "#444" }}>{permissionLabels[permKey]}</Text>
-                    <Switch 
-                      checked={editingRole.permissions[permKey]} 
-                      onChange={() => handleTogglePermission(permKey)}
-                      style={{ backgroundColor: editingRole.permissions[permKey] ? sidebarBlue : undefined }}
-                    />
-                  </div>
-                ))}
-              </Card>
-            </Col>
-
-            {/* قسم إدارة الأطباء والمرضى */}
-            <Col xs={24} md={12}>
-              <Card type="inner" title="إدارة الأطباء والمرضى" style={{ borderRadius: "12px", border: "1px solid #eef2f5" }}>
-                {Object.keys(editingRole.permissions).filter(k => !k.startsWith("clinics_")).map(permKey => (
-                  <div key={permKey} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: "1px solid #f5f5f5" }}>
-                    <Text strong style={{ color: "#444" }}>{permissionLabels[permKey]}</Text>
-                    <Switch 
-                      checked={editingRole.permissions[permKey]} 
-                      onChange={() => handleTogglePermission(permKey)}
-                      style={{ backgroundColor: editingRole.permissions[permKey] ? sidebarBlue : undefined }}
-                    />
-                  </div>
-                ))}
-              </Card>
-            </Col>
-          </Row>
-        </Card>
-      </div>
-    );
-  }
+ 
 
   // -----------------------------------------------------------------
   // الشاشة رقم 1: شاشة العرض الرئيسية لشبكة الكروت (الأدوار)
@@ -233,20 +133,19 @@ if(viewPermissions){
     عرض جميع الصلاحيات
   </Button>
         <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={handleCreateRole}
-          style={{
-            backgroundColor: sidebarBlue,
-            borderColor: sidebarBlue,
-            height: "42px",
-            borderRadius: "10px",
-            fontWeight: 600,
-            boxShadow: `0 6px 16px ${sidebarBlue}35`
-          }}
-        >
-          إنشاء دور جديد
-        </Button>
+    type="primary"
+    icon={<PlusOutlined />}
+    onClick={() => setOpenAddRole(true)}
+    style={{
+      backgroundColor: sidebarBlue,
+      borderColor: sidebarBlue,
+      height: 42,
+      borderRadius: 10,
+      fontWeight: 600,
+    }}
+>
+    إنشاء دور جديد
+</Button>
         </Space>
       </div>
 
@@ -315,8 +214,10 @@ const activePermsCount = role.permissionsCount;
                       type="text" 
                       icon={<EditOutlined style={{ color: sidebarBlue, fontSize: "15px" }} />} 
                       style={{ fontWeight: 600, color: "#555" }}
-                      onClick={() => setEditingRole(role)}
-                    >
+onClick={()=>{
+    setEditingRole(role);
+    setOpenEditRole(true);
+}}                    >
                       تعديل الصلاحيات
                     </Button>
                   </Tooltip>,
@@ -408,6 +309,24 @@ const activePermsCount = role.permissionsCount;
 
         setDeleteModalOpen(false);
         setSelectedRole(null);
+    }}
+/>
+<AddRoleModal
+    open={openAddRole}
+    handleClose={() => setOpenAddRole(false)}
+    onSuccess={() => {
+        dispatch(fetchRoles());
+    }}
+/>
+<EditRoleModal
+    open={openEditRole}
+    role={editingRole}
+    handleClose={()=>{
+        setOpenEditRole(false);
+        setEditingRole(null);
+    }}
+    onSuccess={()=>{
+        dispatch(fetchRoles());
     }}
 />
     </div>

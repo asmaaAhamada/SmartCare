@@ -23,6 +23,8 @@ import vrifyClinicReducer from '../slice/clinic/verfiy'
 import DeleteClinicReducer from '../slice/clinic/delet'
 import fetchDetailsRolesRedcer from '../slice/pirmission/deteails'
 import fetchAllRolesReducer from '../slice/pirmission/groupfitsh'
+import Add_RoleReducer from '../slice/pirmission/addRole' 
+import Update_RoleReducer from '../slice/pirmission/edite'
 const store = configureStore({
   reducer: {
  Log_in:Log_inReducer, 
@@ -48,7 +50,9 @@ const store = configureStore({
  vrifyClinic:vrifyClinicReducer,
  DeleteClinic:DeleteClinicReducer,
  fetchDetailsRoles:fetchDetailsRolesRedcer,
- fetchAllRoles:fetchAllRolesReducer
+ fetchAllRoles:fetchAllRolesReducer,
+ Add_Role:Add_RoleReducer,
+ Update_Role:Update_RoleReducer
  }
 })
 

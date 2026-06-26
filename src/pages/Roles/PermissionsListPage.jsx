@@ -34,15 +34,7 @@ const { Title, Text } = Typography;
 
 const sidebarBlue = baby_blue;
 
-const grouped = permissions.reduce((acc, item) => {
-  if (!acc[item.group]) {
-    acc[item.group] = [];
-  }
 
-  acc[item.group].push(item);
-
-  return acc;
-}, {});
 
 const getMeta = (group) => {
   switch (group) {
@@ -106,8 +98,8 @@ export default function PermissionsCatalogPage({ onBack }) {
        const dispatch = useDispatch();
       const { data: responseData, isLoading } = useSelector((state) => state.fetchAllRoles);
     
-    //   console.log(responseData);
-    const permissions = responseData?.data || [];
+      console.log(responseData);
+const grouped = responseData?.data || {};    
       useEffect(() => {
         dispatch(fetchAllRoles());
       }, [dispatch]);
@@ -145,7 +137,7 @@ if (isLoading) {
     </Row>
   );
 }
-if (!permissions.length) {
+if (!Object.keys(grouped).length) {
   return <Empty description="لا توجد صلاحيات" />;
 }
   return (
