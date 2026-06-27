@@ -17,6 +17,7 @@ import PatientsDashboard from './pages/Patients/PatientsDashboard';
 import StatisticsPage from './pages/dashbord/StatisticsPage';
 import AnnouncementsPage from './pages/news/AnnouncementsPage';
 import ProtectedRoute from './pages/auth/proctedRout';
+import FinancialManagement from './pages/FinancialManagement/FinancialManagement';
 
 
 
@@ -42,6 +43,8 @@ export default function App({toggleMode, mode}){
           <Route index element={<StatisticsPage />} /> 
           
           <Route path="doctor" element={<DoctorPage />} />
+                    <Route path="Financial" element={<FinancialManagement />} />
+
           <Route path="Patients" element={<PatientsDashboard />} />
           <Route path="News" element={<AnnouncementsPage />} />
           <Route path="Clinics" element={<ClinicsPage />} />

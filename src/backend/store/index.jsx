@@ -25,6 +25,8 @@ import fetchDetailsRolesRedcer from '../slice/pirmission/deteails'
 import fetchAllRolesReducer from '../slice/pirmission/groupfitsh'
 import Add_RoleReducer from '../slice/pirmission/addRole' 
 import Update_RoleReducer from '../slice/pirmission/edite'
+import fetchAPPINTMENTReducer from '../slice/patitents/appointents/fetchAll'
+import fetchSpecialtiesReducer from '../slice/doctors/speslist'
 const store = configureStore({
   reducer: {
  Log_in:Log_inReducer, 
@@ -52,8 +54,11 @@ const store = configureStore({
  fetchDetailsRoles:fetchDetailsRolesRedcer,
  fetchAllRoles:fetchAllRolesReducer,
  Add_Role:Add_RoleReducer,
- Update_Role:Update_RoleReducer
+ Update_Role:Update_RoleReducer,
+ fetchAPPINTMENT:fetchAPPINTMENTReducer,
+ fetchSpecialties:fetchSpecialtiesReducer
  }
+
 })
 
 export default store

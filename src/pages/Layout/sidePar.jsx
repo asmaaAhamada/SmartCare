@@ -36,6 +36,7 @@ import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import Diversity1OutlinedIcon from '@mui/icons-material/Diversity1Outlined';
 import MedicalServicesOutlinedIcon from '@mui/icons-material/MedicalServicesOutlined';
 import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined';
+import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import {
   baby_blue,
   darkgray,
@@ -53,6 +54,11 @@ const menuItems = [
     text: "لوحة التحكم",
     icon: <DashboardOutlinedIcon sx={{ fontSize: "26px" }} />,
     path: "/dashbord", 
+  },
+  {
+    text: "إدارة العمولات",
+    icon: <LocalAtmIcon sx={{ fontSize: "26px" }} />,
+    path: "/dashbord/Financial", 
   },
    {
     text: "الإعلانات",

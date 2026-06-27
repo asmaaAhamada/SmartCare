@@ -15,3 +15,5 @@ export const Clincs = `/clinics`
 export const TOGGIL =`/toggle-status`
 export const PIRRIMISSION =`/permissions`
 export const LIST =`/list`
+export const APPINTMENT =`/appointments`
+export const SPESLIST =`/specialties`

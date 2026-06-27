@@ -32,26 +32,40 @@ import {
 import { setformInfo, resetForm, clearError, Add_Doctors } from '../../backend/slice/doctors/Add'; 
 // استيراد أكسشن جلب الأطباء لتحديث الجدول تلقائياً
 import { fetchDoctors } from '../../backend/slice/doctors/fetchAll'; 
+import { fetchSpecialties } from '../../backend/slice/doctors/speslist';
 
 export default function AddDoctorForm({ onCancel }) {
   const dispatch = useDispatch();
   
   // جلب البيانات والحالات من الـ Redux Store بناءً على اسم السلايس المعتمد
   const { formInfo, isLoading, error, success } = useSelector((state) => state.Add_Doctors);
+const {
+  data: specialties,
+  isLoading: specialtiesLoading,
+} = useSelector((state) => state.fetchSpecialties);
+
+
+
+  useEffect(() => {
+  dispatch(fetchSpecialties());
+}, [dispatch]);
+
+
 
   const mainColor = '#035970';
 
   // معالجة حالة النجاح تلقائياً
-  useEffect(() => {
-    if (success) {
-      // 1. إعادة جلب قائمة الأطباء لتحديث الجدول مباشرة في الخلفية
-      dispatch(fetchDoctors());
-      // 2. تصفير حقول الفورم من السلايس
+ useEffect(() => {
+  if (success) {
+    dispatch(fetchDoctors());
+
+    setTimeout(() => {
       dispatch(resetForm());
-      // 3. إغلاق المودال المنبثق
+
       if (onCancel) onCancel();
-    }
-  }, [success, dispatch, onCancel]);
+    }, 2000); // انتظار ثانيتين
+  }
+}, [success, dispatch, onCancel]);
 
   // تنظيف الأخطاء وتصفير الفورم عند إغلاق الكومبوننت
   useEffect(() => {
@@ -91,11 +105,19 @@ export default function AddDoctorForm({ onCancel }) {
         <Divider sx={{ mb: 3, backgroundColor: '#e3f2fd' }} />
 
         {/* عرض رسالة خطأ فريندلي في حال وجود مشكلة من السيرفر */}
-        {error && (
-          <Alert severity="error" dir="rtl" sx={{ mb: 3, borderRadius: 2, fontWeight: 'medium' }}>
-            {error || 'عذراً، حدث خطأ غير متوقع أثناء إضافة البيانات. يرجى التحقق وإعادة المحاولة.'}
-          </Alert>
-        )}
+     {error && (
+  <Alert severity="error" sx={{ mb: 2 }}>
+    {typeof error === "string"
+      ? error
+      : error?.message}
+  </Alert>
+)}
+
+{success && (
+  <Alert severity="success" sx={{ mb: 2 }}>
+    تم إضافة الطبيب بنجاح.
+  </Alert>
+)}
 
         <form onSubmit={handleSubmit} dir="rtl">
           <Grid container spacing={2}>
@@ -204,9 +226,11 @@ export default function AddDoctorForm({ onCancel }) {
                   startAdornment: <InputAdornment position="start"><LocalHospital sx={{ color: mainColor, fontSize: 20 }} /></InputAdornment>,
                 }}
               >
-                <MenuItem value={1}>طب عام</MenuItem>
-                <MenuItem value={2}>طب أطفال</MenuItem>
-                <MenuItem value={3}>أمراض القلب</MenuItem>
+               {specialties?.map((item) => (
+  <MenuItem key={item.id} value={item.id}>
+    {item.name_ar}
+  </MenuItem>
+))}
               </TextField>
             </Grid>
 
