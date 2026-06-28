@@ -29,16 +29,19 @@ import {
 } from '@mui/icons-material';
 
 // استيراد الـ actions والـ thunk من السلايس الخاص بكِ
-import { setformInfo, resetForm, clearError, Add_Doctors } from '../../backend/slice/doctors/Add'; 
 // استيراد أكسشن جلب الأطباء لتحديث الجدول تلقائياً
 import { fetchDoctors } from '../../backend/slice/doctors/fetchAll'; 
 import { fetchSpecialties } from '../../backend/slice/doctors/speslist';
-import Swal from "sweetalert2";
-export default function AddDoctorForm({ onCancel }) {
+import { Edit_Doctor ,resetForm, clearError, setFormData, } from '../../backend/slice/doctors/edite';
+
+export default function EditDoctorForm({ onCancel }) {
   const dispatch = useDispatch();
   
   // جلب البيانات والحالات من الـ Redux Store بناءً على اسم السلايس المعتمد
-  const { formInfo, isLoading, error, success } = useSelector((state) => state.Add_Doctors);
+const {formInfo,isLoading,error,success}
+=
+useSelector(state=>state.Edit_Doctor);
+
 const {
   data: specialties,
   isLoading: specialtiesLoading,
@@ -54,7 +57,18 @@ const {
 
   const mainColor = '#035970';
 
-  
+  // معالجة حالة النجاح تلقائياً
+ useEffect(() => {
+  if (success) {
+    dispatch(fetchDoctors());
+
+    setTimeout(() => {
+      dispatch(resetForm());
+
+      if (onCancel) onCancel();
+    }, 2000); // انتظار ثانيتين
+  }
+}, [success, dispatch, onCancel]);
 
   // تنظيف الأخطاء وتصفير الفورم عند إغلاق الكومبوننت
   useEffect(() => {
@@ -64,54 +78,20 @@ const {
   }, [dispatch]);
 
   // التحديث مباشرة داخل الـ Redux Store عند الكتابة
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    dispatch(setformInfo({
-      [name]: type === 'checkbox' ? checked : value
-    }));
-  };
+ const handleChange = (e) => {
+  const { name, value, type, checked } = e.target;
 
-  const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  try {
-    await dispatch(Add_Doctors()).unwrap();
-
-    Swal.fire({
-      icon: "success",
-      title: "تم بنجاح",
-      text: "تمت إضافة الطبيب بنجاح",
-      timer: 1800,
-      showConfirmButton: false,
-      confirmButtonColor: mainColor,
-    });
-
-    dispatch(fetchDoctors());
-    dispatch(resetForm());
-
-    if (onCancel) {
-      onCancel();
-    }
-  } catch (err) {
-    console.log("ERROR FROM BACK", err);
- let errorMessage = "حدث خطأ أثناء إضافة الطبيب";
-
-if (err?.errors) {
-  errorMessage = Object.values(err.errors)
-    .flat()
-    .join("<br>");
-}
-
-Swal.fire({
-  icon: "error",
-  title: "فشل",
-  html: errorMessage,
-  confirmButtonColor: "#d33",
-});
-
-
-}
+  dispatch(
+    setFormData({
+      [name]: type === "checkbox" ? checked : value,
+    })
+  );
 };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // استدعاء دالة إضافة الطبيب من السلايس
+dispatch(Edit_Doctor());  };
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -125,11 +105,24 @@ Swal.fire({
         }}
       >
         <Typography variant="h6" sx={{ mb: 1.5, fontWeight: 'bold', color: mainColor, textAlign: 'right' }}>
-          إضافة طبيب جديد
+          تعديل طبيب 
         </Typography>
         <Divider sx={{ mb: 3, backgroundColor: '#e3f2fd' }} />
 
-    
+        {/* عرض رسالة خطأ فريندلي في حال وجود مشكلة من السيرفر */}
+     {error && (
+  <Alert severity="error" sx={{ mb: 2 }}>
+    {typeof error === "string"
+      ? error
+      : error?.message}
+  </Alert>
+)}
+
+{success && (
+  <Alert severity="success" sx={{ mb: 2 }}>
+    تم تعديل الطبيب بنجاح.
+  </Alert>
+)}
 
         <form onSubmit={handleSubmit} dir="rtl">
           <Grid container spacing={2}>
@@ -393,7 +386,7 @@ Swal.fire({
                   '&:hover': { backgroundColor: '#024456' }
                 }}
               >
-                {isLoading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'إضافة الطبيب'}
+                {isLoading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'تعديل الطبيب'}
               </Button>
               <Button
                 variant="outlined"

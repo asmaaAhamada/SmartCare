@@ -28,6 +28,7 @@ import Update_RoleReducer from '../slice/pirmission/edite'
 import fetchAPPINTMENTReducer from '../slice/patitents/appointents/fetchAll'
 import fetchSpecialtiesReducer from '../slice/doctors/speslist'
 import EditeClinicReducer from '../slice/clinic/edite'
+import Edit_DoctorReducer from '../slice/doctors/edite'
 const store = configureStore({
   reducer: {
  Log_in:Log_inReducer, 
@@ -59,6 +60,7 @@ const store = configureStore({
  fetchAPPINTMENT:fetchAPPINTMENTReducer,
  fetchSpecialties:fetchSpecialtiesReducer,
  EditeClinic:EditeClinicReducer,
+ Edit_Doctor:Edit_DoctorReducer,
  }
 
 })

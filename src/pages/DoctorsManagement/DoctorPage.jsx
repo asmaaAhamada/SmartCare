@@ -16,6 +16,7 @@ import {
   WomanOutlined,
 } from "@ant-design/icons";
 import { fetchDetailsDoctors } from "../../backend/slice/doctors/deteails";
+import { setFormData, updateFormField } from "../../backend/slice/doctors/edite";
 import DeleteDoctorsModal from "./deletDoctors";
 
 // استدعاء الكومبوننتات بشكل Lazy لتخفيف حجم الكود المبدئي للشاشة
@@ -23,6 +24,7 @@ const DoctorProfileModal = lazy(() => import("./DoctorProfileModal"));
 const AddDoctorForm = lazy(() => import("./AddDoctorForm"));
 import VerifyDoctorModal from "./VerifyDoctorModal";
 import DoctorsEmpty from "../empty/DoctorsEmpty";
+import EditDoctorForm from "./EditDoctorForm";
 const { Title } = Typography;
 
 export default function DoctorPage() {
@@ -37,6 +39,7 @@ export default function DoctorPage() {
 
   // حالات التحكم بالمودالات
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen,setIsEditModalOpen]=useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
@@ -44,8 +47,41 @@ export default function DoctorPage() {
   const sidebarBlue = baby_blue; // لون السايد بار المعتمد
 
   const handleAddDoctor = () => setIsAddModalOpen(true);
-  const handleEdit = (id) => console.log("تعديل", id);
-  const handleVerify = (id) => console.log("توثيق", id);
+const handleEdit=(doctor)=>{
+
+dispatch(setFormData({
+
+    id:doctor.id,
+
+    first_name:doctor.user.profile.first_name,
+
+    last_name:doctor.user.profile.last_name,
+
+    email:doctor.user.email,
+
+    phone:doctor.user.profile.phone,
+
+    specialty_id:doctor.specialty.id,
+
+    license_number:doctor.license_number,
+
+    years_experience:doctor.years_experience,
+
+    consultation_fee:doctor.consultation_fee,
+
+    bio:doctor.bio,
+
+    gender:doctor.user.profile.gender,
+
+    home_service:doctor.home_service,
+
+    video_consultation:doctor.video_consultation,
+
+}));
+
+setIsEditModalOpen(true);
+
+}  
   
   const handleDelete = (doctor) => {
     setSelectedDoctor(doctor);
@@ -154,7 +190,7 @@ export default function DoctorPage() {
             <Button 
               type="text" 
               icon={<EditOutlined />} 
-              onClick={() => handleEdit(record.id)}
+              onClick={() => handleEdit(record)}
               style={{ color: "#ed6c02", backgroundColor: "#ed6c0210" }}
             />
           </Tooltip>
@@ -194,16 +230,21 @@ export default function DoctorPage() {
     },     
   ];
 
-  const doctors = responseData?.data?.map((doctor) => ({
-    key: doctor.id,
-    id: doctor.id,
-    name: `${doctor.user?.profile?.first_name} ${doctor.user?.profile?.last_name}`,
-    gender: doctor.user?.profile?.gender,
-    specialty: doctor.specialty?.name_ar,
-    rating: doctor.rating,
-    avatar: doctor.user?.profile?.avatar_url,
-    verified: doctor.is_verified,
-  })) || [];
+const doctors = responseData?.data?.map((doctor) => ({
+  ...doctor,
+
+  key: doctor.id,
+
+  name: `${doctor.user?.profile?.first_name} ${doctor.user?.profile?.last_name}`,
+
+  specialty: doctor.specialty?.name_ar,
+
+  verified: doctor.is_verified,
+
+  gender: doctor.user?.profile?.gender,
+
+  avatar: doctor.user?.profile?.avatar_url,
+})) || [];
 
   return (
     <div style={{ width: "100%", direction: "rtl", padding: "16px" }}>
@@ -335,6 +376,22 @@ export default function DoctorPage() {
   })
   }}
 />
+<Modal
+    open={isEditModalOpen}
+    footer={null}
+    width={850}
+    destroyOnClose
+    onCancel={()=>{
+        setIsEditModalOpen(false);
+    }}
+    styles={{body:{padding:0}}}
+>
+
+    <EditDoctorForm
+        onCancel={()=>setIsEditModalOpen(false)}
+    />
+
+</Modal>
     </div>
   );
 }

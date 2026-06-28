@@ -78,9 +78,23 @@ export default function CreateClinicModal({ open, onClose, onSuccess }) {
 
       if (onSuccess) onSuccess(); // 🔑 استدعاء الفيتش التلقائي في الصفحة الرئيسية
     } catch (err) {
-      // 🔑 طباعة الخطأ داخل الفورم بدلاً من SweetAlert و تداخل الـ z-index
-      const errorMessage = typeof err === "string" ? err : err?.message || "حدث خطأ أثناء إضافة العيادة، يرجى التحقق من الحقول.";
-      setLocalError(errorMessage);
+       onClose();
+      let errorMessage = "حدث خطأ أثناء إضافة الطبيب";
+    
+      if (err?.errors) {
+        errorMessage = Object.values(err.errors)
+          .flat()
+          .join("\n");
+      } else if (err?.message) {
+        errorMessage = err.message;
+      }
+    
+      Swal.fire({
+        icon: "error",
+        title: "فشل",
+        text: errorMessage,
+        confirmButtonColor: "#d33",
+      });
     }
   };
 
