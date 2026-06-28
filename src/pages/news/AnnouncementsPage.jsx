@@ -35,7 +35,7 @@ export default function AnnouncementsPage() {
 
   // جلب الحالة من الريدكس
   const { data: responseData, isLoading } = useSelector((state) => state.fetchAnnouncement);
-
+console.log(responseData)
   useEffect(() => {
     dispatch(fetchAnnouncement());
   }, [dispatch]);
