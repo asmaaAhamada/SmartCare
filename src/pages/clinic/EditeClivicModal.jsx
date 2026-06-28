@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { 
   Dialog, 
   DialogTitle, 
@@ -17,8 +17,7 @@ import {
   FormControlLabel,
   Switch,
   InputAdornment,
-  CircularProgress,
-  Alert // 🔑 استيراد مكون التنبيه لعرض الخطأ داخل الفورم
+  CircularProgress
 } from "@mui/material";
 import Swal from "sweetalert2";
 import CloseIcon from "@mui/icons-material/Close";
@@ -32,11 +31,11 @@ import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import { baby_blue, white } from "../../color-main/color";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSpecialties } from "../../backend/slice/doctors/speslist";
-import { AddClinic, updateFormField, resetForm } from "../../backend/slice/clinic/addClinc";
+// 🔑 استيراد أكشن التحديث والتنظيف من السلايس
+import { EditeClinic, updateFormField, resetForm } from "../../backend/slice/clinic/edite";
 
-export default function CreateClinicModal({ open, onClose, onSuccess }) {
+export default function EditeClinicModal({ open, onClose, onSuccess }) {
   const dispatch = useDispatch();
-  const [localError, setLocalError] = useState(null); // 🔑 حالة محلية لحفظ الخطأ وطباعته داخل المودال
   
   const {
     data: specialties,
@@ -45,42 +44,51 @@ export default function CreateClinicModal({ open, onClose, onSuccess }) {
   const {
     formInfo,
     isLoading,
-  } = useSelector((state) => state.AddClinic);
+  } = useSelector((state) => state.EditeClinic);
 
   useEffect(() => {
     if (open) {
       dispatch(fetchSpecialties());
-      dispatch(resetForm()); 
-      setLocalError(null); // تصفير الأخطاء عند فتح المودال مجدداً
     }
   }, [dispatch, open]);
 
+  // 🔑 دالة مساعدة لإرسال التغييرات مباشرة للـ Slice
   const handleChange = (field, value) => {
     dispatch(updateFormField({ field, value }));
   };
 
+  const handleClose = () => {
+
+    dispatch(resetForm());
+
+    onClose();
+
+}
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLocalError(null); // تصفير الخطأ عند المحاولة الجديدة
-
     try {
-      await dispatch(AddClinic(formInfo)).unwrap();
-      onClose(); // إغلاق المودال فوراً عند النجاح
+      await dispatch(EditeClinic(formInfo)).unwrap();
+      onClose();
 
       Swal.fire({
         icon: "success",
         title: "تم بنجاح",
-        text: "تمت إضافة العيادة بنجاح",
+        text: "تمت تعديل العيادة بنجاح",
         timer: 1800,
         showConfirmButton: false,
         confirmButtonColor: baby_blue,
+        didOpen: () => { Swal.getPopup().style.zIndex = "9999"; }
       });
 
-      if (onSuccess) onSuccess(); // 🔑 استدعاء الفيتش التلقائي في الصفحة الرئيسية
+      if (onSuccess) onSuccess();
     } catch (err) {
-      // 🔑 طباعة الخطأ داخل الفورم بدلاً من SweetAlert و تداخل الـ z-index
-      const errorMessage = typeof err === "string" ? err : err?.message || "حدث خطأ أثناء إضافة العيادة، يرجى التحقق من الحقول.";
-      setLocalError(errorMessage);
+      Swal.fire({
+        icon: "error",
+        title: "فشل",
+        text: typeof err === "string" ? err : err?.message || "حدث خطأ أثناء تعديل العيادة",
+        confirmButtonColor: "#d33",
+        didOpen: () => { Swal.getPopup().style.zIndex = "9999"; }
+      });
     }
   };
 
@@ -94,7 +102,7 @@ export default function CreateClinicModal({ open, onClose, onSuccess }) {
   return (
     <Dialog 
       open={open} 
-      onClose={onClose}
+    onClose={handleClose}
       maxWidth="md"
       fullWidth
       PaperProps={{ sx: { borderRadius: "16px", padding: "8px", direction: "rtl" } }}
@@ -103,7 +111,7 @@ export default function CreateClinicModal({ open, onClose, onSuccess }) {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <LocalHospitalOutlinedIcon sx={{ color: baby_blue || "#035970", fontSize: "28px" }} />
           <Typography variant="h6" component="div" sx={{ fontWeight: 700, color: "#434343" }}>
-            إنشاء عيادة جديدة
+            تعديل عيادة 
           </Typography>
         </Box>
         <IconButton aria-label="close" onClick={onClose} sx={{ color: (theme) => theme.palette.grey[500] }}>
@@ -114,15 +122,6 @@ export default function CreateClinicModal({ open, onClose, onSuccess }) {
       <DialogContent dividers sx={{ p: 3 }}>
         <Grid container spacing={3}>
           
-          {/* 🔑 مكان طباعة رسالة الخطأ داخل الـ Form عند حدوثها */}
-          {localError && (
-            <Grid item xs={12}>
-              <Alert severity="error" sx={{ width: '100%', borderRadius: '8px', fontWeight: 600 }}>
-                {localError}
-              </Alert>
-            </Grid>
-          )}
-
           {/* اسم العيادة */}
           <Grid item xs={12} sm={6}>
             <TextField
@@ -130,8 +129,8 @@ export default function CreateClinicModal({ open, onClose, onSuccess }) {
               label="اسم العيادة"
               placeholder="مثال: عيادة الأسنان المتقدمة"
               variant="outlined"
-              value={formInfo.name || ""} 
-              onChange={(e) => handleChange("name", e.target.value)} 
+              value={formInfo.name || ""} // 🔑 ربط القيمة بالـ Slice
+              onChange={(e) => handleChange("name", e.target.value)} // 🔑 تحديث الـ Slice فوراً
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -150,8 +149,8 @@ export default function CreateClinicModal({ open, onClose, onSuccess }) {
               <Select
                 labelId="specialty-label"
                 label="التخصص طبّي"
-                value={formInfo.specialty_id || ""} 
-                onChange={(e) => handleChange("specialty_id", e.target.value)} 
+                value={formInfo.specialty_id || ""} // 🔑 ربط القيمة بالـ Slice
+                onChange={(e) => handleChange("specialty_id", e.target.value)} // 🔑 تحديث الـ Slice فوراً
                 startAdornment={
                   <InputAdornment position="start" style={{ marginRight: "8px" }}>
                     <StethoscopeIcon sx={{ color: "#a1a9c3" }} />
@@ -174,8 +173,8 @@ export default function CreateClinicModal({ open, onClose, onSuccess }) {
               label="الطابق"
               placeholder="مثال: الطابق الثاني"
               variant="outlined"
-              value={formInfo.floor || ""} 
-              onChange={(e) => handleChange("floor", e.target.value)} 
+              value={formInfo.floor || ""} // 🔑 ربط القيمة بالـ Slice
+              onChange={(e) => handleChange("floor", e.target.value)} // 🔑 تحديث الـ Slice فوراً
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -194,8 +193,8 @@ export default function CreateClinicModal({ open, onClose, onSuccess }) {
               label="رقم الغرفة"
               placeholder="مثال: 205"
               variant="outlined"
-              value={formInfo.room_number || ""} 
-              onChange={(e) => handleChange("room_number", e.target.value)} 
+              value={formInfo.room_number || ""} // 🔑 ربط القيمة بالـ Slice
+              onChange={(e) => handleChange("room_number", e.target.value)} // 🔑 تحديث الـ Slice فوراً
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -214,8 +213,8 @@ export default function CreateClinicModal({ open, onClose, onSuccess }) {
               label="رقم الهاتف"
               placeholder="مثال: 0112345678"
               variant="outlined"
-              value={formInfo.phone || ""} 
-              onChange={(e) => handleChange("phone", e.target.value)} 
+              value={formInfo.phone || ""} // 🔑 ربط القيمة بالـ Slice
+              onChange={(e) => handleChange("phone", e.target.value)} // 🔑 تحديث الـ Slice فوراً
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -232,8 +231,8 @@ export default function CreateClinicModal({ open, onClose, onSuccess }) {
             <FormControlLabel
               control={
                 <Switch 
-                  checked={Boolean(formInfo.is_active)} 
-                  onChange={(e) => handleChange("is_active", e.target.checked)} 
+                  checked={Boolean(formInfo.is_active)} // 🔑 ربط القيمة بالـ Slice
+                  onChange={(e) => handleChange("is_active", e.target.checked)} // 🔑 تحديث الـ Slice فوراً
                   sx={{
                     '& .MuiSwitch-switchBase.Mui-checked': { color: baby_blue },
                     '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: baby_blue }
@@ -259,8 +258,8 @@ export default function CreateClinicModal({ open, onClose, onSuccess }) {
               label="وصف العيادة وتفاصيلها"
               placeholder="اكتب هنا تفاصيل إضافية عن العيادة..."
               variant="outlined"
-              value={formInfo.description || ""} 
-              onChange={(e) => handleChange("description", e.target.value)} 
+              value={formInfo.description || ""} // 🔑 ربط القيمة بالـ Slice
+              onChange={(e) => handleChange("description", e.target.value)} // 🔑 تحديث الـ Slice فوراً
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: 1.5 }}>
@@ -296,6 +295,8 @@ export default function CreateClinicModal({ open, onClose, onSuccess }) {
           variant="outlined" 
           disabled={isLoading}
           onClick={onClose}
+              onClose={handleClose}
+
           sx={{ 
             color: "#8c8c8c", 
             borderColor: "#d9d9d9",

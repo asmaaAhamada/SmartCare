@@ -27,16 +27,18 @@ import CreateClinicModal from "./CreateClinicModal";
 import { fetchDetailsclincs } from "../../backend/slice/clinic/deteails";
 import ToggleClinicStatusModal from "./VerifyClinicModal";
 import DeleteClinicModal from "./deletClinic";
-
+import { setFormData } from "../../backend/slice/clinic/edite";
+import EditeClinicModal from "./EditeClivicModal";
 const { Title, Text } = Typography;
 
 export default function ClinicsPage() {
   const dispatch = useDispatch();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
-
+const [openEdit, setOpenEdit] = useState(false);
   const [selectedClinic, setSelectedClinic] = useState(null);
-const [openToggle, setOpenToggle] = useState(false);
+  const [openToggle, setOpenToggle] = useState(false);
+  
   // جلب حالة التحميل والبيانات من السلايس
   const { data: responseData, isLoading } = useSelector((state) => state.fetchClinic);
   const {
@@ -57,16 +59,44 @@ const [openToggle, setOpenToggle] = useState(false);
     dispatch(fetchClinic());
   }, [dispatch]);
 
-  const handleAddClinic = () => console.log("إضافة عيادة جديدة");
-  const handleEditClinic = (id) => console.log("تعديل بيانات العيادة رقم", id);
-const toggleClinicStatus = (clinic) => {
+  // 🔑 تعديل الدالة لتفتح المودال عند الضغط على زر الإضافة العلوي
+  const handleAddClinic = () => {
+    setIsCreateModalOpen(true);
+  };
+
+const handleEditClinic = (clinic) => {
+
+    dispatch(setFormData({
+
+        id: clinic.id,
+
+        name: clinic.name,
+
+        room_number: clinic.room_number,
+
+        description: clinic.description,
+
+        phone: clinic.phone,
+
+        floor: clinic.floor,
+
+        specialty_id: clinic.specialty_id,
+
+        is_active: clinic.is_active,
+
+    }));
+
+    setOpenEdit(true);
+
+};  const toggleClinicStatus = (clinic) => {
+      setSelectedClinic(clinic);
+      setOpenToggle(true);
+  }; 
+  const handleDeleteClinic = (clinic) => {
     setSelectedClinic(clinic);
-    setOpenToggle(true);
-}; 
-const handleDeleteClinic = (clinic) => {
-  setSelectedClinic(clinic);
-  setOpenDelete(true);
-};
+    setOpenDelete(true);
+  };
+
   // أعمدة جدول الأطباء في صفحة التفاصيل
   const doctorColumns = [
     {
@@ -117,7 +147,7 @@ const handleDeleteClinic = (clinic) => {
       <div style={{ 
         fontSize: "20px", 
         color: sidebarBlue, 
-        backgroundColor: `${sidebarBlue}10`, // خلفية شفافة من نفس اللون
+        backgroundColor: `${sidebarBlue}10`, 
         padding: "10px", 
         borderRadius: "8px",
         display: "flex",
@@ -147,7 +177,6 @@ const handleDeleteClinic = (clinic) => {
     return (
       <div style={{ width: "100%", direction: "rtl", padding: "16px", backgroundColor: "#f8f9fa", minHeight: "100vh" }}>
         
-        {/* زر العودة العلوي المنفصل */}
         <Button 
           type="default" 
           icon={<ArrowRightOutlined />} 
@@ -163,7 +192,6 @@ const handleDeleteClinic = (clinic) => {
           العودة إلى قائمة العيادات
         </Button>
 
-        {/* كرت الهيدر الرئيسي العلوي */}
         <Card 
           bordered={false} 
           style={{ 
@@ -221,7 +249,6 @@ const handleDeleteClinic = (clinic) => {
           </div>
         </Card>
 
-        {/* قسم معلومات العيادة (Grid من الكروت الصغيرة المرتبة) */}
         <div style={{ marginBottom: "12px" }}>
           <Text strong style={{ fontSize: "16px", color: "#333", display: "flex", alignItems: "center", marginBottom: "16px" }}>
             <span style={{ width: "4px", height: "16px", backgroundColor: sidebarBlue, marginLeft: "8px", display: "inline-block", borderRadius: "2px" }}></span>
@@ -255,21 +282,18 @@ const handleDeleteClinic = (clinic) => {
               {renderInfoCard("عدد الأطباء", clinicDetails.doctors_count, <TeamOutlined />)}
             </Col>
 
-            {/* حقل الوصف */}
             <Col xs={24}>
               {renderInfoCard("الوصف", clinicDetails.description, <FileTextOutlined />)}
             </Col>
           </Row>
         </div>
 
-        {/* قسم الأطباء المسجلين في العيادة */}
         <div style={{ marginTop: "24px" }}>
           <Text strong style={{ fontSize: "16px", color: "#333", display: "flex", alignItems: "center", marginBottom: "16px" }}>
             <span style={{ width: "4px", height: "16px", backgroundColor: sidebarBlue, marginLeft: "8px", display: "inline-block", borderRadius: "2px" }}></span>
             الأطباء المسجلون في العيادة ({clinicDetails.doctors_count})
           </Text>
 
-          {/* تم تعديل الجدول هنا لحقن ستايل خاص بالـ Header لتلوينه بالكامل باللون الأزرق */}
           <Table
             columns={doctorColumns}
             dataSource={clinicDetails.doctors}
@@ -318,7 +342,6 @@ const handleDeleteClinic = (clinic) => {
   return (
     <div style={{ width: "100%", direction: "rtl", padding: "16px" }}>
       
-      {/* الهيدر العلوي لعنوان الصفحة */}
       <div style={{ 
         display: "flex", 
         justifyContent: "space-between",
@@ -333,7 +356,7 @@ const handleDeleteClinic = (clinic) => {
           <Button
             type="primary"
             icon={<PlusOutlined />}
-            onClick={handleAddClinic}
+            onClick={handleAddClinic} // 🔑 تم تعديلها لتفتح المودال للأعلى
             style={{
               backgroundColor: sidebarBlue,
               borderColor: sidebarBlue,
@@ -348,19 +371,17 @@ const handleDeleteClinic = (clinic) => {
         )}
       </div>
 
-      {/* معالجة حالة التحميل (Loading) */}
       {isLoading ? (
-         <Row gutter={[20, 20]}>
-      {Array.from({ length: 6 }).map((_, index) => (
-        <Col xs={24} lg={12} key={index}>
-          <Card loading />
-        </Col>
-      ))}
-    </Row>
+          <Row gutter={[20, 20]}>
+            {Array.from({ length: 6 }).map((_, index) => (
+              <Col xs={24} lg={12} key={index}>
+                <Card loading />
+              </Col>
+            ))}
+          </Row>
       ) : clinics.length === 0 ? (
         <EmptyClinics onAddClick={() => setIsCreateModalOpen(true)} sidebarBlue={sidebarBlue} />
       ) : (
-        /* عرض الكروت في حال وجود بيانات حقيقية */
         <Row gutter={[20, 20]}>
           {clinics.map((clinic) => (
             <Col xs={24} sm={12} lg={8} key={clinic.id}>
@@ -389,36 +410,34 @@ const handleDeleteClinic = (clinic) => {
                   <Tooltip title="تعديل البيانات">
                     <EditOutlined 
                       key="edit" 
-                      onClick={() => handleEditClinic(clinic.id)} 
+                      onClick={() => handleEditClinic(clinic)} 
                       style={{ color: "#ed6c02", fontSize: "16px" }} 
                     />
                   </Tooltip>,
                   
                   <Tooltip title={clinic.is_active ? "تعطيل العيادة" : "تفعيل العيادة"}>
                     {clinic.is_active ? (
+                      <CheckCircleOutlined 
+                        key="status" 
+                        onClick={() => toggleClinicStatus(clinic)} 
+                                                style={{ color: "#52c41a", fontSize: "16px" }} 
+
+                      />
+                    ) : (
                       <CloseCircleOutlined 
                         key="status" 
                         onClick={() => toggleClinicStatus(clinic)} 
                         style={{ color: "#faad14", fontSize: "16px" }} 
                       />
-                    ) : (
-                      <CheckCircleOutlined 
-                        key="status" 
-                        onClick={() => toggleClinicStatus(clinic)} 
-                        style={{ color: "#52c41a", fontSize: "16px" }} 
-                      />
                     )}
                   </Tooltip>,
                   
-                <Tooltip title="حذف العيادة">
-  <DeleteOutlined
-    style={{
-      color: "#ff4d4f",
-      fontSize: 16,
-    }}
-    onClick={() => handleDeleteClinic(clinic)}
-  />
-</Tooltip>
+                  <Tooltip title="حذف العيادة">
+                    <DeleteOutlined
+                      style={{ color: "#ff4d4f", fontSize: 16 }}
+                      onClick={() => handleDeleteClinic(clinic)}
+                    />
+                  </Tooltip>
                 ]}
               >
                 <Space size="middle" style={{ alignItems: "flex-start", width: "100%" }}>
@@ -459,33 +478,49 @@ const handleDeleteClinic = (clinic) => {
           ))}
         </Row>
       )}
-      <CreateClinicModal open={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
-       <ToggleClinicStatusModal
-  open={openToggle}
-  clinic={selectedClinic}
-  onCancel={() => {
-    setOpenToggle(false);
-    setSelectedClinic(null);
-  }}
-  onSuccess={() => {
-    dispatch(fetchClinic());      // إعادة جلب العيادات
-    setToggleOpen(false);         // إغلاق المودال
-    setSelectedClinic(null);      // تنظيف البيانات
-  }}
-/>
-<DeleteClinicModal
-  open={openDelete}
-  clinic={selectedClinic}
-  onCancel={() => {
-    setOpenDelete(false);
-    setSelectedClinic(null);
-  }}
-  onSuccess={() => {
-    dispatch(fetchClinic());
 
-    setOpenDelete(false);
-    setSelectedClinic(null);
-  }}
+      {/* 🔑 تمرير الأكشن onSuccess ليعمل fetch الفوري للعيادات فور إضافة عيادة جديدة بنجاح */}
+      <CreateClinicModal 
+        open={isCreateModalOpen} 
+        onClose={() => setIsCreateModalOpen(false)} 
+        onSuccess={() => {
+          dispatch(fetchClinic());
+        }}
+      />
+
+      <ToggleClinicStatusModal
+        open={openToggle}
+        clinic={selectedClinic}
+        onCancel={() => {
+          setOpenToggle(false);
+          setSelectedClinic(null);
+        }}
+        onSuccess={() => {
+          dispatch(fetchClinic());      
+          setOpenToggle(false);         
+          setSelectedClinic(null);      
+        }}
+      />
+
+      <DeleteClinicModal
+        open={openDelete}
+        clinic={selectedClinic}
+        onCancel={() => {
+          setOpenDelete(false);
+          setSelectedClinic(null);
+        }}
+        onSuccess={() => {
+          dispatch(fetchClinic());
+          setOpenDelete(false);
+          setSelectedClinic(null);
+        }}
+      />
+      <EditeClinicModal
+    open={openEdit}
+    onClose={() => setOpenEdit(false)}
+    onSuccess={() => {
+        dispatch(fetchClinic());
+    }}
 />
     </div>
   );
