@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Table, Tag } from 'antd';
-import { Button, Box, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from '@mui/material';
+import { Button, Box, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 import { Add, WarningAmber } from '@mui/icons-material';
 
-const InventoryManager = ({ pharmacyColor }) => {
+const InventoryManager = () => {
+  const pharmacyColor = '#4A148C';
   const [stock, setStock] = useState([
     { key: '1', name: 'Lipitor 20mg', qty: 140, minLimit: 25 },
-    { key: '2', name: 'Aspirin Cardo', qty: 6, minLimit: 20 },
+    { key: '2', name: 'Aspirin Cardio', qty: 6, minLimit: 20 },
     { key: '3', name: 'Voltaren Emulgel', qty: 72, minLimit: 15 },
   ]);
   const [isLowStockFilter, setIsLowStockFilter] = useState(false);
@@ -63,7 +64,15 @@ const InventoryManager = ({ pharmacyColor }) => {
         </Button>
       </Box>
 
-      {/* جدول المخزون متجاوب 100% مع الشاشات الصغيرة والكبيرة عبر السكرول */}
+      <style>{`
+        .ant-table-wrapper .ant-table-thead > tr > th {
+          background-color: ${pharmacyColor} !important;
+          color: white !important;
+          font-weight: bold !important;
+          text-align: center !important;
+        }
+      `}</style>
+
       <Table 
         columns={columns} 
         dataSource={displayedStock} 

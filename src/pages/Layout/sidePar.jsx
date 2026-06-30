@@ -37,11 +37,15 @@ import Diversity1OutlinedIcon from '@mui/icons-material/Diversity1Outlined';
 import MedicalServicesOutlinedIcon from '@mui/icons-material/MedicalServicesOutlined';
 import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined';
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
+import MedicineIcon from '@mui/icons-material/LocalPharmacyOutlined';
+import InventoryIcon from '@mui/icons-material/Inventory2Outlined';
+import ReceiptIcon from '@mui/icons-material/ReceiptLongOutlined';
+import ReportsIcon from '@mui/icons-material/BarChartOutlined';
 import {
   baby_blue,
   darkgray,
 } from  "../../color-main/color";
-
+import BiotechOutlinedIcon from '@mui/icons-material/BiotechOutlined'; // ممتازة جداً وتوحي بالتكنولوجيا الحيوية والمختبرات
 import LogoHeader from "./logoHeader";
 
 // LAZY LOADING
@@ -50,55 +54,79 @@ const TopBar = lazy(() => import("./TopBar"));
 // ================= MENU ITEMS =================
 
 const menuItems = [
-   {
+  {
     text: "لوحة التحكم",
     icon: <DashboardOutlinedIcon sx={{ fontSize: "26px" }} />,
-    path: "/dashbord", 
+    path: "/dashbord",
+    roles: ["admin" ],
   },
   {
     text: "إدارة العمولات",
     icon: <LocalAtmIcon sx={{ fontSize: "26px" }} />,
-    path: "/dashbord/Financial", 
+    path: "/dashbord/Financial",
+    roles: ["admin"],
   },
-   {
+  {
     text: "الإعلانات",
     icon: <CampaignOutlinedIcon sx={{ fontSize: "26px" }} />,
-    path: "/dashbord/News", 
+    path: "/dashbord/News",
+    roles: ["admin"],
   },
-    {
+  {
     text: "العيادات",
     icon: <MedicalServicesOutlinedIcon sx={{ fontSize: "26px" }} />,
-    path: "/dashbord/Clinics", 
+    path: "/dashbord/Clinics",
+    roles: ["admin"],
   },
-   {
+  {
     text: "الأطباء",
     icon: <Diversity1OutlinedIcon sx={{ fontSize: "26px" }} />,
-    path: "/dashbord/doctor", 
+    path: "/dashbord/doctor",
+    roles: ["admin"],
   },
-   {
+  {
     text: "الصلاحيات والأدوار",
     icon: <GroupAddOutlinedIcon sx={{ fontSize: "26px" }} />,
-    path: "/dashbord/roles", 
+    path: "/dashbord/roles",
+    roles: ["admin"],
   },
   {
     text: "المرضى",
     icon: <AssignmentIndOutlinedIcon sx={{ fontSize: "26px" }} />,
-    path: "/dashbord/Patients", 
-  },
- {
-    text: "التحليلات",
-    icon: <AssignmentIndOutlinedIcon sx={{ fontSize: "26px" }} />,
-    path: "/dashbord/lab", 
+    path: "/dashbord/Patients",
+    roles: ["admin"],
   },
   {
-    text: "صيدلة",
-    icon: <AssignmentIndOutlinedIcon sx={{ fontSize: "26px" }} />,
-    path: "/dashbord/pharmacy", 
+    text: "الفحوصات والتحاليل",
+    icon: <BiotechOutlinedIcon sx={{ fontSize: "26px" }} />,
+    path: "/dashbord/lab",
+    roles: ["lab"],
   },
- 
- 
+ {
+    text: "إدارة الأدوية",
+    icon: <MedicineIcon sx={{ fontSize: "25px" }} />,
+    path: "/dashbord/pharmacy/medicines",
+    roles: ["pharmacist"],
+  },
+  {
+    text: "المخزون المستودعي",
+    icon: <InventoryIcon sx={{ fontSize: "25px" }} />,
+    path: "/dashbord/pharmacy/inventory",
+    roles: ["pharmacist"],
+  },
+  {
+    text: "الوصفات الطبية",
+    icon: <ReceiptIcon sx={{ fontSize: "25px" }} />,
+    path: "/dashbord/pharmacy/prescriptions",
+    roles: ["pharmacist"],
+  },
+  {
+    text: "التقارير والإحصائيات",
+    icon: <ReportsIcon sx={{ fontSize: "25px" }} />,
+    path: "/dashbord/pharmacy/reports",
+    roles: ["pharmacist"],
+  },
 ];
-
 // ================= SIDEBAR ITEM =================
 
 const SidebarItem = memo(
@@ -162,19 +190,30 @@ function Sidebar({ toggleMode, mode }) {
   const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
+const userInfo = useSelector((state) => state.user?.userInfo);
 
   // اللون الأزرق الطبي المعتمد للسايدبار
-  const medicalTealColor =baby_blue; 
+const role = userInfo?.role;
 
+const roleColors = {
+  admin: baby_blue,     // اللون الحالي
+  pharmacist: "#4A148C",
+  lab: "#1B5E20",
+  receptionist: "#E65100",
+  accountant: "#1E293B",
+};
+
+const medicalTealColor = roleColors[role] || baby_blue;
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const [mobileOpen, setMobileOpen] = useState(false);
 
 
-const userInfo = useSelector((state) => state.user?.userInfo);
 
   const filteredMenuItems = useMemo(() => {
-    return menuItems;
-  }, []);
+  return menuItems.filter((item) =>
+    item.roles.includes(userInfo?.role)
+  );
+}, [userInfo]);
 
   const handleDrawerToggle = useCallback(() => {
     setMobileOpen((prev) => !prev);

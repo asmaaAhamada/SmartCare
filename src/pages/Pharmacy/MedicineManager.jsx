@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Table, Tag, Space, Tooltip } from 'antd';
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Box } from '@mui/material';
 import { Add, Delete, Loop } from '@mui/icons-material';
-// استدعاء كمبوننت الحذف المنفصل
 import DeleteMedicineModal from './DeleteMedicineModal';
 
-const MedicineManager = ({ pharmacyColor }) => {
+const MedicineManager = () => {
+  const pharmacyColor = '#4A148C'; // اللون البنفسجي الخاص بالقسم
   const [medicines, setMedicines] = useState([
     { key: '1', name: 'Panadol Extra', category: 'مسكن آلام', status: 'متوفر' },
     { key: '2', name: 'Amoxicillin', category: 'مضاد حيوي', status: 'منتهي الصلاحية' },
@@ -77,7 +77,7 @@ const MedicineManager = ({ pharmacyColor }) => {
     <Box>
       <Box display="flex" justifyContent="flex-start" mb={3}>
         <Button variant="contained" startIcon={<Add />} style={{ backgroundColor: pharmacyColor, fontFamily: 'inherit', fontWeight: 'bold' }} onClick={() => setOpenModal(true)}>
-          إضافة dواء جديد
+          إضافة دواء جديد
         </Button>
       </Box>
 
@@ -101,7 +101,6 @@ const MedicineManager = ({ pharmacyColor }) => {
         scroll={{ x: 'max-content' }} 
       />
 
-      {/* مودال الإضافة الرئيسي */}
       <Dialog open={openModal} onClose={() => setOpenModal(false)} maxWidth="xs" fullWidth>
         <DialogTitle style={{ textAlign: 'center', color: pharmacyColor, fontWeight: 'bold', fontFamily: 'inherit' }}>إضافة مستحضر طبي جديد</DialogTitle>
         <DialogContent dividers>
@@ -114,7 +113,6 @@ const MedicineManager = ({ pharmacyColor }) => {
         </DialogActions>
       </Dialog>
 
-      {/* 🔮 استدعاء كمبوننت مودال الحذف العصري الجديد عند الضغط */}
       <DeleteMedicineModal 
         open={openDeleteModal}
         onClose={() => setOpenDeleteModal(false)}

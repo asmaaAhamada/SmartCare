@@ -5,18 +5,18 @@ import Card from '@mui/material/Card';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useTheme } from "@emotion/react";
-import { Alert, Button, LinearProgress, IconButton, alpha } from "@mui/material"; 
+import { Alert, Button, LinearProgress, IconButton, alpha, FormControl, InputLabel, Select, MenuItem } from "@mui/material"; 
 import InputAdornment from '@mui/material/InputAdornment';
 import MailOutlineIcon from '@mui/icons-material/MailOutline'; 
 import Visibility from '@mui/icons-material/Visibility'; 
 import VisibilityOff from '@mui/icons-material/VisibilityOff'; 
+import BadgeIcon from '@mui/icons-material/Badge'; // أيقونة إضافية للقائمة المنسدلة
 import { baby_blue, darkblue } from '../../color-main/color';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { clearError, Log_in, setformInfo, setError } from '../../backend/slice/auth/log_in_Slice';
 
-// استيراد الصورة الخلفية للقسم الأيمن
 import bgImage from '../../assets/image/image.jpg'; 
 
 export default function LoginPage() {
@@ -26,7 +26,8 @@ export default function LoginPage() {
   const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);
 
-  const { password, email } = useSelector((state) => state.Log_in.formInfo);
+  // 🌟 استدعاء الـ loginType من السلايس
+  const { password, email, loginType } = useSelector((state) => state.Log_in.formInfo);
   const { isLoading, error } = useSelector((state) => state.Log_in);
 
   const dispatch = useDispatch();
@@ -38,7 +39,6 @@ export default function LoginPage() {
     e.preventDefault();
     dispatch(clearError());
 
-    // التحقق من الحقول (Validation)
     let hasError = false;
 
     if (!email) {
@@ -55,33 +55,49 @@ export default function LoginPage() {
 
     try {
       const response = await dispatch(Log_in()).unwrap();
-      const role = response?.role; 
+      
+      // 🌟 فحص الرول بشكل مرن لأن الأدمن يرجع بـ admin والموظف بـ staff
+      const userObj = response?.data?.admin || response?.data?.staff;
+      const role = userObj?.role;
+      
+      console.log("الرول الحالي:", role);
 
-      if (response?.data?.admin?.role === "admin") {
-        navigate("/dashbord");
-      } else {
-        console.log("تم تسجيل الدخول ولكن الصلاحية ليست أدمن:", role);
+      switch (role) {
+        case "admin":
+          navigate("/dashbord");
+          break;
+        case "lab":
+          navigate("/dashbord/lab");
+          break;
+        case "pharmacist":
+          navigate("/dashbord/pharmacy");
+          break;
+        case "accountant": // أضفت المحاسب بناءً على ريسبرنس الباكيند الخاص بك
+          navigate("/dashbord/accountant"); 
+          break;
+        default:
+          console.log("صلاحية غير معروفة، توجه للرئيسية");
+          navigate("/dashbord");
       }
     } catch (apiError) {
       console.error("خطأ التسجيل من الباكيند:", apiError);
     }
   } 
 
-  // 🌟 تعديل الستاتيل الموحد للحقول لضمان ضبط الليبل والنوتش لليمين دون تداخل مع الأيقونات اليسارية
   const textFieldStyles = {
     "& .MuiInputLabel-root": { 
       fontFamily: arabicFont, 
       color: "text.disabled", 
-      right: 16, // وضع الليبل الافتراضي باليمين تماماً
+      right: 16, 
       left: "auto",
       transformOrigin: "top right"
     },
     "& .MuiInputLabel-shrink": {
-      transform: "translate(0, -9px) scale(0.75)", // ضبط تموضع الليبل عند الارتفاع لأعلى
+      transform: "translate(0, -9px) scale(0.75)", 
       right: 16,
     },
     "& .MuiOutlinedInput-notchedOutline": {
-      textAlign: "right" // نقل فتحة خط الحقل (Notch) إلى جهة اليمين بدلاً من اليسار
+      textAlign: "right" 
     },
     "& .MuiFormHelperText-root": {
       fontFamily: arabicFont,
@@ -103,95 +119,54 @@ export default function LoginPage() {
         p: { xs: 2, md: 0 }
       }}
     >
-      {/* طبقات الخلفيات المضيئة الملونة */}
-      <Box sx={{
-        position: 'absolute',
-        width: 300,
-        height: 300,
-        background: darkblue,
-        filter: 'blur(120px)',
-        borderRadius: '50%',
-        top: -50,
-        left: -50,
-        opacity: 0.4,
-        zIndex: 1,
-      }} />
+      {/* طبقات الخلفيات */}
+      <Box sx={{ position: 'absolute', width: 300, height: 300, background: darkblue, filter: 'blur(120px)', borderRadius: '50%', top: -50, left: -50, opacity: 0.4, zIndex: 1 }} />
+      <Box sx={{ position: 'absolute', width: 250, height: 250, background: '#6366f1', filter: 'blur(120px)', borderRadius: '50%', bottom: -50, right: -50, opacity: 0.4, zIndex: 1 }} />
 
-      <Box sx={{
-        position: 'absolute',
-        width: 250,
-        height: 250,
-        background: '#6366f1',
-        filter: 'blur(120px)',
-        borderRadius: '50%',
-        bottom: -50,
-        right: -50,
-        opacity: 0.4,
-        zIndex: 1,
-      }} />
+      <Card sx={{ display: 'flex', flexDirection: 'row', width: { xs: '100%', sm: '90%', md: '850px' }, height: { xs: 'auto', md: '560px' }, boxShadow: 8, borderRadius: '16px', overflow: 'hidden', zIndex: 2, position: 'relative' }}>
+        
+        <Box sx={{ flex: 1, height: '100%', display: { xs: 'none', md: 'block' }, backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} />
 
-      {/* الكارد الرئيسي المقسوم بالنصف هندسياً */}
-      <Card 
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          width: { xs: '100%', sm: '90%', md: '850px' }, 
-          height: { xs: 'auto', md: '530px' },
-          boxShadow: 8,
-          borderRadius: '16px',
-          overflow: 'hidden',
-          zIndex: 2,
-          position: 'relative'
-        }}
-      >
-        {/* القسم الأيمن: يحمل صورة الطاقم الطبي */}
-        <Box sx={{ 
-          flex: 1, 
-          height: '100%',
-          display: { xs: 'none', md: 'block' },
-          backgroundImage: `url(${bgImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }} />
-
-        {/* القسم الأيسر: يحمل الفورم والنصوص الترحيبية والحقول */}
-        <Box
-          component="form"
-          onSubmit={Login}
-          autoComplete="new-password"
-          sx={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'white',
-            p: { xs: 3, md: 4 },
-            direction: 'rtl' // تفعيل اتجاه RTL للقسم كاملاً
-          }}
-        >
-          {/* الجملة الترحيبية */}
+        <Box component="form" onSubmit={Login} autoComplete="new-password" sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', backgroundColor: 'white', p: { xs: 3, md: 4 }, direction: 'rtl' }}>
+          
           <Box sx={{ textAlign: 'center', mb: 3, width: '100%' }}>
             <Typography sx={{ fontWeight: 800, fontSize: '1.6rem', color: medicalTealColor, fontFamily: arabicFont }}>
               مرحباً بك مجدداً!
             </Typography>
             <Typography sx={{ color: 'text.secondary', fontSize: '0.95rem', fontFamily: arabicFont, mt: 0.5 }}>
-              يرجى تسجيل الدخول للمتابعة إلى حسابك
+              يرجى تحديد نوع الحساب وتسجيل الدخول للمتابعة
             </Typography>
           </Box>
 
-          {/* البوكس المخصص لاحتواء الحقول */}
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, width: '100%' }}>
             
-            {/* 🌟 حقل البريد الإلكتروني - تم نقل الأيقونة لـ startAdornment لتظهر يساراً */}
+            {/* 🌟 المكون الجديد: Dropdown واجهة تسجيل الدخول */}
+            <FormControl fullWidth sx={textFieldStyles}>
+              <InputLabel id="login-type-label" sx={{ fontFamily: arabicFont }}>نوع الحساب</InputLabel>
+              <Select
+                labelId="login-type-label"
+                value={loginType}
+                label="نوع الحساب"
+                onChange={(e) => dispatch(setformInfo({ loginType: e.target.value }))}
+                style={{ fontFamily: arabicFont, textAlign: 'right' }}
+                startAdornment={
+                  <InputAdornment position="start">
+                    <BadgeIcon sx={{ color: medicalTealColor, mx: 0.5 }} />
+                  </InputAdornment>
+                }
+              >
+                <MenuItem value="admin" style={{ fontFamily: arabicFont, direction: 'rtl' }}>مدير النظام (Admin)</MenuItem>
+                <MenuItem value="staff" style={{ fontFamily: arabicFont, direction: 'rtl' }}>الكادر الطبي والوظيفي (Staff)</MenuItem>
+              </Select>
+            </FormControl>
+
+            {/* حقل البريد الإلكتروني */}
             <TextField
               value={email}
               onChange={(e) => dispatch(setformInfo({ email: e.target.value }))}
               fullWidth
               label="البريد الإلكتروني"
               error={!!error.email}
-              helperText={error.email}
               autoComplete="new-password"
               sx={textFieldStyles}
               InputProps={{
@@ -201,12 +176,10 @@ export default function LoginPage() {
                   </InputAdornment>
                 ),
               }}
-              inputProps={{ 
-                style: { fontFamily: arabicFont, textAlign: 'right' }
-              }}
+              inputProps={{ style: { fontFamily: arabicFont, textAlign: 'right' } }}
             />
 
-            {/* 🌟 حقل كلمة المرور - تم نقل أيقونة العين لـ startAdornment لتظهر يساراً */}
+            {/* حقل كلمة المرور */}
             <TextField
               type={showPassword ? 'text' : 'password'}
               value={password}
@@ -214,7 +187,6 @@ export default function LoginPage() {
               fullWidth
               label="كلمة المرور"
               error={!!error.password}
-              helperText={error.password}
               autoComplete="new-password"
               sx={textFieldStyles}
               InputProps={{
@@ -226,40 +198,20 @@ export default function LoginPage() {
                   </InputAdornment>
                 ),
               }}
-              inputProps={{ 
-                style: { fontFamily: arabicFont, textAlign: 'right' }
-              }}
+              inputProps={{ style: { fontFamily: arabicFont, textAlign: 'right' } }}
             />
 
-            {/* خطأ الـ API */}
             {error.general && (
               <Alert severity="error" sx={{ fontFamily: arabicFont, mt: 1 }}>
                 {error.general}
               </Alert>
             )}
 
-            {/* زر تسجيل الدخول أو لودر التحميل */}
             <Box sx={{ mt: 1 }}>
               {isLoading ? (
                 <LinearProgress sx={{ backgroundColor: medicalTealColor, borderRadius: 1, height: 5 }} />
               ) : (
-                <Button
-                  type="submit"
-                  sx={{ 
-                    backgroundColor: medicalTealColor,
-                    fontFamily: arabicFont,
-                    fontWeight: 700,
-                    fontSize: '1.05rem',
-                    py: 1.2,
-                    borderRadius: 2,
-                    color: 'white',
-                    '&:hover': {
-                      backgroundColor: alpha(medicalTealColor, 0.85)
-                    }
-                  }}
-                  variant="contained"
-                  fullWidth
-                >
+                <Button type="submit" sx={{ backgroundColor: medicalTealColor, fontFamily: arabicFont, fontWeight: 700, fontSize: '1.05rem', py: 1.2, borderRadius: 2, color: 'white', '&:hover': { backgroundColor: alpha(medicalTealColor, 0.85) } }} variant="contained" fullWidth>
                   تسجيل الدخول
                 </Button>
               )}

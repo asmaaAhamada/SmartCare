@@ -1,21 +1,37 @@
 import { Box } from "@mui/material";
-import logo from "../../assets/image/ادمن.png";
+import { useSelector } from "react-redux";
+
+import adminLogo from "../../assets/image/ادمن.png";
+import receptionistLogo from "../../assets/image/استعلامات.jfif";
+import labLogo from "../../assets/image/مخبري.jfif";
+import pharmacyLogo from "../../assets/image/صيدلة.jfif";
+import accountantLogo from "../../assets/image/محاسبة.jfif";
 
 export default function LogoHeader() {
+  const role = useSelector((state) => state.user?.userInfo?.role);
+
+  const logos = {
+    admin: adminLogo,
+    pharmacist: pharmacyLogo,
+    lab: labLogo,
+    receptionist: receptionistLogo,
+    accountant: accountantLogo,
+  };
+
+  const logo = logos[role] || adminLogo;
+
   return (
     <Box
       sx={{
-        width: "100%", // لضمان أخذ العرض الكامل للـ Sidebar
-        height: 120,    // يمكنك زيادة الارتفاع قليلاً ليناسب أبعاد التصميم الجديد
-        borderBottom: "1px solid rgba(0, 0, 0, 0.05)", // خط سفلي ناعم ومتناسق مع الخلفية البيضاء
+        width: "100%",
+        height: 120,
+        borderBottom: "1px solid rgba(0,0,0,.05)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        overflow: "hidden", // لمنع خروج أي أجزاء زائدة من الصورة عن الإطار
-        direction: "rtl",
+        overflow: "hidden",
       }}
     >
-      {/* اللوجو المعدل ليملأ المساحة بالكامل */}
       <Box
         component="img"
         src={logo}
@@ -23,7 +39,7 @@ export default function LogoHeader() {
         sx={{
           width: "100%",
           height: "100%",
-          objectFit: "fill", // يضمن ملء الطول والعرض بنسبة 100% دون ترك أي فراغات هوامش بيضاء
+          objectFit: "fill",
         }}
       />
     </Box>
