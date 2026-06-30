@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Table, Tag, Space, Input, message } from "antd";
+import React, { useEffect, useState, useCallback } from "react";
+import { Table, Tag, Space, Input, message, Spin, Empty } from "antd";
 import { Button as MUIButton, Box, Card, Typography, Grid, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { motion } from "framer-motion";
 import { 
@@ -15,66 +15,76 @@ import {
 } from "@mui/icons-material";
 
 import { baby_blue } from "../../color-main/color";
-// استيراد كمبوننت المودال الجديد المفصول
 import RefundModal from "./RefundModal";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPAYMENT } from "../../backend/slice/payments/fetchAll";
 
 const PRIMARY_DARK = "#0a566c";  
 const PRIMARY_LIGHT = "#13296a"; 
 const SECONDARY_BLUE = "#3faec5"; 
 const ACCENT_RED = "#d32f2f";    
 
-const initialPaymentsData = [
-  { id: 1, patientId: 5, patientName: "أحمد الوتار", amount: 150, paymentMethod: "cash", date: "2026-06-15", status: "completed", refundAmount: 0, refundReason: "" },
-  { id: 2, patientId: 12, patientName: "سارة العلي", amount: 200, paymentMethod: "card", date: "2026-06-18", status: "completed", refundAmount: 0, refundReason: "" },
-  { id: 3, patientId: 8, patientName: "خالد منصور", amount: 300, paymentMethod: "cash", date: "2026-06-20", status: "partial_refunded", refundAmount: 100, refundReason: "رسوم إلغاء متأخر - استرجاع جزئي" },
-  { id: 4, patientId: 3, patientName: "رنا العبدالله", amount: 120, paymentMethod: "card", date: "2026-06-22", status: "refunded", refundAmount: 120, refundReason: "إلغاء الموعد من قبل الطبيب" },
-  { id: 5, patientId: 5, patientName: "أحمد الوتار", amount: 90, paymentMethod: "cash", date: "2026-06-25", status: "completed", refundAmount: 0, refundReason: "" },
-];
-
 export default function FinancialManagement() {
-  const [payments, setPayments] = useState(initialPaymentsData);
+  const dispatch = useDispatch();
+  
+  // جلب البيانات وحالة اللودنغ من الريدوكس ستيت المحدثة
+  const { data: apiPayments, isLoading } = useSelector((state) => state.fetchPAYMENT);
+
   const [filterMethod, setFilterMethod] = useState("all");
   const [searchPatientId, setSearchPatientId] = useState("");
   
-  // التحكم بحالة المودال المفصول
+  // التحكم بحالة المودال المنفصل
   const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
 
   const sidebarBlue = baby_blue || SECONDARY_BLUE;
 
-  const filteredPayments = payments.filter((item) => {
-    const matchesMethod = filterMethod === "all" || item.paymentMethod === filterMethod;
-    const matchesPatient = searchPatientId === "" || item.patientId.toString() === searchPatientId;
-    return matchesMethod && matchesPatient;
-  });
+  // استدعاء الأكشن عند تغيير الفلاتر لعمل فيتش مباشر ومفلتر من الـ API (طريقة احترافية)
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      dispatch(fetchPAYMENT({
+        payment_method: filterMethod,
+        patient_id: searchPatientId
+      }));
+    }, 400); // Debounce لمنع تكرار الـ API Calls أثناء كتابة المعرف بسرعة
 
-  const totalEarnings = payments.filter(p => p.status === "completed" || p.status === "partial_refunded").reduce((sum, p) => sum + (p.amount - p.refundAmount), 0);
-  const totalRefunds = payments.reduce((sum, p) => sum + p.refundAmount, 0);
-  const activeTransactions = filteredPayments.length;
+    return () => clearTimeout(delayDebounceFn);
+  }, [dispatch, filterMethod, searchPatientId]);
+
+  // تجهيز البيانات المستلمة لتتوافق تماماً مع حقول الجدول المرفقة بصور البوست مان
+  const mappedPayments = apiPayments?.map((item) => ({
+    id: item.id,
+    key: item.id,
+    patientId: item.patient?.id,
+    patientName: item.patient?.name || "مريض غير معروف",
+    amount: item.amount,
+    currency: item.currency || "SYP",
+    paymentMethod: item.payment_method,
+    date: item.paid_at ? item.paid_at.substring(0, 10) : "-",
+    status: item.status,
+    refundAmount: item.refund_amount || 0,
+    refundReason: item.refund_reason || ""
+  })) || [];
+
+  // حساب الحصائل الإجمالية مباشرة من البيانات الحقيقية المستلمة
+  const totalEarnings = mappedPayments
+    .filter(p => p.status === "succeeded" || p.status === "partial_refunded")
+    .reduce((sum, p) => sum + (p.amount - p.refundAmount), 0);
+
+  const totalRefunds = mappedPayments.reduce((sum, p) => sum + p.refundAmount, 0);
+  const activeTransactions = mappedPayments.length;
 
   const handleOpenRefundModal = (record) => {
     setSelectedPayment(record);
     setIsRefundModalOpen(true);
   };
 
-  // ميثود استلام الداتا المحدثة من المودال المفصول وتحديث الستيت (أو الـ API)
   const handleConfirmRefund = (values, refundType) => {
-    setPayments((prev) => 
-      prev.map((pay) => {
-        if (pay.id === selectedPayment.id) {
-          const isFull = refundType === "full" || values.refundAmount === (pay.amount - pay.refundAmount);
-          return {
-            ...pay,
-            status: isFull ? "refunded" : "partial_refunded",
-            refundAmount: pay.refundAmount + values.refundAmount,
-            refundReason: values.refundReason
-          };
-        }
-        return pay;
-      })
-    );
-    message.success(`تمت عملية الاسترجاع بنجاح لـ ${selectedPayment.patientName} ✨`);
+    // هنا يتم ربط أكشن الاسترجاع المخصص للـ API مستقبلاً
+    message.success(`تم إرسال طلب استرجاع لـ ${selectedPayment.patientName} بنجاح ✨`);
     setIsRefundModalOpen(false);
+    // إعادة جلب البيانات لتحديث الستيت من السيرفر
+    dispatch(fetchPAYMENT({ payment_method: filterMethod, patient_id: searchPatientId }));
   };
 
   const columns = [
@@ -100,7 +110,11 @@ export default function FinancialManagement() {
       title: "المبلغ الإجمالي",
       dataIndex: "amount",
       key: "amount",
-      render: (amount) => <Typography variant="body2" sx={{ fontWeight: "700", color: PRIMARY_DARK }}>{amount} AED</Typography>,
+      render: (amount, record) => (
+        <Typography variant="body2" sx={{ fontWeight: "700", color: PRIMARY_DARK }}>
+          {amount} {record.currency}
+        </Typography>
+      ),
     },
     {
       title: "طريقة الدفع",
@@ -128,13 +142,15 @@ export default function FinancialManagement() {
       dataIndex: "status",
       key: "status",
       render: (status, record) => {
-        if (status === "completed") return <Tag color="success" icon={<CheckCircleOutlined style={{ fontSize: 12 }} />}>مكتملة</Tag>;
-        if (status === "partial_refunded") return <Tag color="warning" icon={<LocalAtmOutlined style={{ fontSize: 12 }} />}>مسترجع جزئياً ({record.refundAmount} AED)</Tag>;
+        if (status === "succeeded" || status === "completed") 
+          return <Tag color="success" icon={<CheckCircleOutlined style={{ fontSize: 12 }} />}>مكتملة</Tag>;
+        if (status === "partial_refunded") 
+          return <Tag color="warning" icon={<LocalAtmOutlined style={{ fontSize: 12 }} />}>مسترجع جزئياً ({record.refundAmount} {record.currency})</Tag>;
         return <Tag color="error" icon={<AssignmentReturnOutlined style={{ fontSize: 12 }} />}>مسترجع بالكامل</Tag>;
       },
     },
     {
-      title: "إجراءات بورصة المرتجعات",
+      title: "الإجراءات المتاحة",
       key: "actions",
       render: (_, record) => (
         <Space size="middle">
@@ -183,7 +199,7 @@ export default function FinancialManagement() {
         }
       `}</style>
 
-      {/* لوحة البورصة الحية */}
+      {/* لوحة بورصة التداولات المالية الحية */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={4}>
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
@@ -193,7 +209,7 @@ export default function FinancialManagement() {
                 <AccountBalanceWalletOutlined sx={{ color: PRIMARY_DARK, fontSize: 28 }} />
               </Box>
               <Typography variant="h4" sx={{ fontWeight: 800, mt: 1.5, color: PRIMARY_DARK }}>
-                {totalEarnings} <span style={{ fontSize: 16 }}>AED</span>
+                {isLoading ? <Spin size="small" /> : `${totalEarnings.toLocaleString()} SYP`}
               </Typography>
             </Card>
           </motion.div>
@@ -207,7 +223,7 @@ export default function FinancialManagement() {
                 <SettingsBackupRestoreOutlined sx={{ color: ACCENT_RED, fontSize: 28 }} />
               </Box>
               <Typography variant="h4" sx={{ fontWeight: 800, mt: 1.5, color: ACCENT_RED }}>
-                {totalRefunds} <span style={{ fontSize: 16 }}>AED</span>
+                {isLoading ? <Spin size="small" /> : `${totalRefunds.toLocaleString()} SYP`}
               </Typography>
             </Card>
           </motion.div>
@@ -217,21 +233,21 @@ export default function FinancialManagement() {
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
             <Card className="ticker-card" sx={{ p: 2.5, borderRadius: "16px", background: "linear-gradient(135deg, #fff 0%, #f6f8ff 100%)", borderLeftColor: `${PRIMARY_LIGHT} !important` }}>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <Typography variant="body2" sx={{ color: "text.secondary", fontWeight: 600 }}>حركات التداول المفلترة 📊</Typography>
+                <Typography variant="body2" sx={{ color: "text.secondary", fontWeight: 600 }}>حركات التداول الحالية 📊</Typography>
                 <TrendingUpOutlined sx={{ color: PRIMARY_LIGHT, fontSize: 28 }} />
               </Box>
               <Typography variant="h4" sx={{ fontWeight: 800, mt: 1.5, color: PRIMARY_LIGHT }}>
-                {activeTransactions} <span style={{ fontSize: 16 }}>عملية</span>
+                {isLoading ? <Spin size="small" /> : `${activeTransactions} عملية`}
               </Typography>
             </Card>
           </motion.div>
         </Grid>
       </Grid>
 
-      {/* شريط التحكم والبحث */}
+      {/* شريط التحكم، البحث والفلترة */}
       <Card sx={{ p: 2.5, mb: 3, borderRadius: "16px", boxShadow: "0 4px 20px rgba(0,0,0,0.02)" }}>
         <Grid container spacing={2} alignItems="center" justifyContent="space-between">
-          <Grid item xs={12} md={7} sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Grid item xs={12} md={7} sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
             <FilterAltOutlined sx={{ color: PRIMARY_DARK }} />
             <Typography variant="body2" sx={{ fontWeight: 700, minWidth: "110px" }}>بوابة فلاتر الدفع:</Typography>
             <ToggleButtonGroup
@@ -240,11 +256,12 @@ export default function FinancialManagement() {
               onChange={(e, next) => next && setFilterMethod(next)}
               size="small"
               color="primary"
+              disabled={isLoading}
               sx={{ direction: "ltr" }}
             >
               <ToggleButton value="all" sx={{ fontWeight: 600, fontFamily: "inherit" }}>الكل</ToggleButton>
-              <ToggleButton value="cash" sx={{ fontWeight: 600, fontFamily: "inherit" }}>المدفوعات النقدية (Cash)</ToggleButton>
-              <ToggleButton value="card" sx={{ fontWeight: 600, fontFamily: "inherit" }}>الشبكة / البطاقة (Card)</ToggleButton>
+              <ToggleButton value="cash" sx={{ fontWeight: 600, fontFamily: "inherit" }}>نقداً (Cash)</ToggleButton>
+              <ToggleButton value="card" sx={{ fontWeight: 600, fontFamily: "inherit" }}>البطاقة (Card)</ToggleButton>
             </ToggleButtonGroup>
           </Grid>
 
@@ -254,6 +271,7 @@ export default function FinancialManagement() {
               prefix={<SearchOutlined style={{ color: "gray" }} />}
               value={searchPatientId}
               onChange={(e) => setSearchPatientId(e.target.value)}
+              disabled={isLoading}
               style={{ borderRadius: "8px", padding: "8px 12px" }}
               allowClear
             />
@@ -261,19 +279,22 @@ export default function FinancialManagement() {
         </Grid>
       </Card>
 
-      {/* الجدول الرئيسي */}
+      {/* الجدول الرئيسي مع معالجة حركات اللودنغ والداتا الفاضية */}
       <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
         <Table 
           className="financial-table"
           columns={columns}
-          dataSource={filteredPayments}
+          dataSource={mappedPayments}
           rowKey="id"
+          loading={isLoading}
           pagination={{ pageSize: 6, position: ["bottomCenter"] }}
-          locale={{ emptyText: "📊 لا يوجد حركات دفع تطابق فلاتر التداول المحددة حالياً." }}
+          locale={{ 
+            emptyText: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="📊 لا توجد قيود مالية مسجلة تطابق محددات البحث الفوري حالياً." /> 
+          }}
         />
       </motion.div>
 
-      {/* استدعاء المودال المفصول وتمرير الخواص والأكشنز المباشرة */}
+      {/* استدعاء كمبوننت المودال المفصول */}
       <RefundModal 
         open={isRefundModalOpen}
         onClose={() => setIsRefundModalOpen(false)}

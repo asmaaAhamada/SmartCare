@@ -85,6 +85,16 @@ const menuItems = [
     icon: <AssignmentIndOutlinedIcon sx={{ fontSize: "26px" }} />,
     path: "/dashbord/Patients", 
   },
+ {
+    text: "التحليلات",
+    icon: <AssignmentIndOutlinedIcon sx={{ fontSize: "26px" }} />,
+    path: "/dashbord/lab", 
+  },
+  {
+    text: "صيدلة",
+    icon: <AssignmentIndOutlinedIcon sx={{ fontSize: "26px" }} />,
+    path: "/dashbord/pharmacy", 
+  },
  
  
 ];

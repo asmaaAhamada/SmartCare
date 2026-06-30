@@ -11,8 +11,14 @@ import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import { baby_blue, darkcard, gray, gray2, gray4, gray7, gray8, lighttext, mainColor, white } from "../../color-main/color";
 import NightlightOutlinedIcon from '@mui/icons-material/NightlightOutlined';
 import WbSunnyOutlinedIcon from '@mui/icons-material/WbSunnyOutlined';
+import { useSelector } from "react-redux";
 
 export default function TopBar(props) {
+  const userRole = useSelector(
+  (state) => state.user?.userInfo?.role
+);
+  console.log(userRole)
+
     const theme= useTheme()
       const { window, toggleMode, mode } = props;
 

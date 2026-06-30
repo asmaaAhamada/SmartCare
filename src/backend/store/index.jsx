@@ -29,6 +29,11 @@ import fetchAPPINTMENTReducer from '../slice/patitents/appointents/fetchAll'
 import fetchSpecialtiesReducer from '../slice/doctors/speslist'
 import EditeClinicReducer from '../slice/clinic/edite'
 import Edit_DoctorReducer from '../slice/doctors/edite'
+import fetchDetailspatitnentReducer from '../slice/patitents/deteails'
+import vrifypatitnentReducer from '../slice/patitents/verfiy'
+import  fetchspesficAPPINTMENTReducer from '../slice/patitents/appointents/spescfic'
+import fetchPAYMENTReducer from '../slice/payments/fetchAll'
+import partialRefundReducer from '../slice/payments/partialRefund'
 const store = configureStore({
   reducer: {
  Log_in:Log_inReducer, 
@@ -61,6 +66,11 @@ const store = configureStore({
  fetchSpecialties:fetchSpecialtiesReducer,
  EditeClinic:EditeClinicReducer,
  Edit_Doctor:Edit_DoctorReducer,
+ fetchDetailspatitnent:fetchDetailspatitnentReducer,
+ vrifypatitnent:vrifypatitnentReducer,
+ fetchspesficAPPINTMENT:fetchspesficAPPINTMENTReducer,
+ fetchPAYMENT:fetchPAYMENTReducer,
+ partialRefund: partialRefundReducer,
  }
 
 })

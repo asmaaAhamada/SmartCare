@@ -17,3 +17,4 @@ export const PIRRIMISSION =`/permissions`
 export const LIST =`/list`
 export const APPINTMENT =`/appointments`
 export const SPESLIST =`/specialties`
+export const PAYMENT = `/payments`

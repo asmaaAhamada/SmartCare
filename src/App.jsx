@@ -18,6 +18,8 @@ import StatisticsPage from './pages/dashbord/StatisticsPage';
 import AnnouncementsPage from './pages/news/AnnouncementsPage';
 import ProtectedRoute from './pages/auth/proctedRout';
 import FinancialManagement from './pages/FinancialManagement/FinancialManagement';
+import LabDashboard from './pages/Laboratory/LabDashboard';
+import PharmacyDashboard from './pages/Pharmacy/PharmacyDashboard';
 
 
 
@@ -49,6 +51,15 @@ export default function App({toggleMode, mode}){
           <Route path="News" element={<AnnouncementsPage />} />
           <Route path="Clinics" element={<ClinicsPage />} />
                     <Route path="roles" element={<PermissionsPage />} />
+                    {/* مخبري */}
+                                        <Route path="lab" element={<LabDashboard />} />
+                                                            {/* ============مخبري ====================*/}
+
+                                        {/* صيدلاني */}
+                                        <Route path="pharmacy" element={<PharmacyDashboard />} />
+                                                                                {/*========= صيدلاني ============*/}
+
+
 
         </Route>
         </Route>
