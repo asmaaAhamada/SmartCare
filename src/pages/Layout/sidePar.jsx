@@ -41,6 +41,9 @@ import MedicineIcon from '@mui/icons-material/LocalPharmacyOutlined';
 import InventoryIcon from '@mui/icons-material/Inventory2Outlined';
 import ReceiptIcon from '@mui/icons-material/ReceiptLongOutlined';
 import ReportsIcon from '@mui/icons-material/BarChartOutlined';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
+import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined';
 import {
   baby_blue,
   darkgray,
@@ -126,6 +129,25 @@ const menuItems = [
     path: "/dashbord/pharmacy/reports",
     roles: ["pharmacist"],
   },
+  {
+    text: "إدارة المدفوعات",
+    icon: <AttachMoneyIcon sx={{ fontSize: "26px" }} />,
+    path: "/dashbord/accountant/payments",
+    roles: ["accountant"],
+  },
+  {
+    text: "التقارير المالية",
+    icon: <AssessmentOutlinedIcon sx={{ fontSize: "26px" }} />,
+    path: "/dashbord/accountant/reports",
+    roles: ["accountant"],
+  },
+  {
+    text: "الفواتير الحسابية",
+    icon: <PointOfSaleIcon sx={{ fontSize: "26px" }} />,
+    path: "/dashbord/accountant/invoices",
+    roles: ["accountant"],
+  },
+  
 ];
 // ================= SIDEBAR ITEM =================
 

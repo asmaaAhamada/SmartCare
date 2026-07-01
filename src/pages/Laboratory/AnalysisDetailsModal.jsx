@@ -1,8 +1,28 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Grid, Divider } from '@mui/material';
+import { fetchDetailslab, resetDetails } from '../../backend/slice/lab_mangment/deteails';
+import { useDispatch, useSelector } from 'react-redux';
 
 const AnalysisDetailsModal = ({ open, onClose, data }) => {
-  if (!data) return null;
+     const dispatch = useDispatch();
+        
+          // جلب تفاصيل الإعلان من الـ Redux Store
+    const {
+      data: Response,
+      isLoading,
+      error,
+    } = useSelector((state) => state.fetchDetailslab);
+    
+    const roleData = Response?.data;    
+          // جلب البيانات عند فتح المودال وتغير الـ ID وتصفيرها عند الإغلاق
+          useEffect(() => {
+            if (open && id) {
+              dispatch(fetchDetailslab(id));
+            }
+            return () => {
+              dispatch(resetDetails());
+            };
+          }, [id, open, dispatch]);
 
   // اللون الأخضر المخبري المعتمد
   const labGreenColor = '#1B5E20';

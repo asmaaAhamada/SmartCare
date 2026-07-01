@@ -34,6 +34,18 @@ import vrifypatitnentReducer from '../slice/patitents/verfiy'
 import  fetchspesficAPPINTMENTReducer from '../slice/patitents/appointents/spescfic'
 import fetchPAYMENTReducer from '../slice/payments/fetchAll'
 import partialRefundReducer from '../slice/payments/partialRefund'
+import fetchlabReducer from '../slice/lab_mangment/fetchAll'
+import AddlabReducer from '../slice/lab_mangment/add_lab'
+import fetchDetailslabReducer from '../slice/lab_mangment/deteails'
+import ExportFileReducer from '../slice/lab_mangment/upload'
+import fetchpaymentsReducer from '../slice/accounting/fetchAll'
+import fetchDetailspaymentsReducer from '../slice/accounting/deteails'
+import payments_statsReducer from '../slice/accounting/satiscs'
+import fetchinnvocingReducer from '../slice/accounting/invocing'
+import fetchDetailsinnvocingReducer from '../slice/accounting/deteails_invocing'
+import fetchreportReducer from '../slice/accounting/report'
+import createInvoiceReducer from '../slice/accounting/createInvoice'
+import refundPaymentReducer from '../slice/accounting/refundSlice'
 const store = configureStore({
   reducer: {
  Log_in:Log_inReducer, 
@@ -71,6 +83,18 @@ const store = configureStore({
  fetchspesficAPPINTMENT:fetchspesficAPPINTMENTReducer,
  fetchPAYMENT:fetchPAYMENTReducer,
  partialRefund: partialRefundReducer,
+ fetchlab:fetchlabReducer,
+ Addlab:AddlabReducer,
+ fetchDetailslab:fetchDetailslabReducer,
+ ExportFile:ExportFileReducer,
+ fetchpayments:fetchpaymentsReducer,
+ fetchDetailspayments:fetchDetailspaymentsReducer,
+ payments_stats:payments_statsReducer,
+ fetchinnvocing:fetchinnvocingReducer,
+ fetchDetailsinnvocing:fetchDetailsinnvocingReducer,
+ fetchreport:fetchreportReducer,
+ createInvoice:createInvoiceReducer,
+ refundPayment:refundPaymentReducer
  }
 
 })

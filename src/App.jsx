@@ -22,54 +22,66 @@ import InventoryManager from './pages/Pharmacy/InventoryManager';
 import PrescriptionManager from './pages/Pharmacy/PrescriptionManager';
 import PharmacyReports from './pages/Pharmacy/PharmacyReports';
 import MedicineManager from './pages/Pharmacy/MedicineManager';
+import PaymentsManager from './pages/accountening/PaymentsManager';
+import InvoicesManager from './pages/accountening/InvoicesManager';
+import ReportManager from './pages/accountening/ReportManager';
 
 export default function App({ toggleMode, mode }) {
   return (
     <>
       <Routes>
-        {/* ================= المسارات العامة المفتوحة للجميع ================= */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/public" element={<PublicPage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/story" element={<StoryPage />} />
-        <Route path="/login" element={<LoginPage />} />
+  {/* ================= المسارات العامة المفتوحة للجميع ================= */}
+  <Route path="/" element={<HomePage />} />
+  <Route path="/public" element={<PublicPage />} />
+  <Route path="/about" element={<AboutPage />} />
+  <Route path="/story" element={<StoryPage />} />
+  <Route path="/login" element={<LoginPage />} />
 
-        {/* ================= حماية لوحة التحكم بالكامل ================= */}
-        <Route element={<ProtectedRoute allowedRole={["admin", "lab", "pharmacist"]} />}>
-          
-          <Route path="/dashbord" element={<Sidebar toggleMode={toggleMode} mode={mode} />}>
-            {/* الصفحة الافتراضية المباشرة التي تفتح فور دخول لوحة التحكم */}
-            <Route index element={<StatisticsPage />} /> 
-            
-            <Route path="doctor" element={<DoctorPage />} />
-            <Route path="Financial" element={<FinancialManagement />} />
-            <Route path="Patients" element={<PatientsDashboard />} />
-            <Route path="News" element={<AnnouncementsPage />} />
-            <Route path="Clinics" element={<ClinicsPage />} />
-            <Route path="roles" element={<PermissionsPage />} />
-
-            {/*  قسم المخبري (محمي بصلاحية المخبري فقط) */}
-            <Route element={<ProtectedRoute allowedRole={["lab"]} />}>
-              <Route path="lab" element={<LabDashboard />} />
-            </Route>
-
-            {/*  قسم الصيدلية (محمي بصلاحية الصيدلاني فقط) */}
-           <Route element={<ProtectedRoute allowedRole={["pharmacist"]} />}>
-  <Route path="pharmacy" element={<PharmacyReports />}>  
+  {/* ================= حماية لوحة التحكم بالكامل (تم إضافة accountant) ================= */}
+  <Route element={<ProtectedRoute allowedRole={["admin", "lab", "pharmacist", "accountant"]} />}>
     
-    <Route index element={<Navigate to="reports" replace />} />
+    <Route path="/dashbord" element={<Sidebar toggleMode={toggleMode} mode={mode} />}>
+      {/* الصفحة الافتراضية المباشرة التي تفتح فور دخول لوحة التحكم */}
+      <Route index element={<StatisticsPage />} /> 
+      
+      <Route path="doctor" element={<DoctorPage />} />
+      <Route path="Financial" element={<FinancialManagement />} />
+      <Route path="Patients" element={<PatientsDashboard />} />
+      <Route path="News" element={<AnnouncementsPage />} />
+      <Route path="Clinics" element={<ClinicsPage />} />
+      <Route path="roles" element={<PermissionsPage />} />
 
-    <Route path="inventory" element={<InventoryManager />} />
-    <Route path="prescriptions" element={<PrescriptionManager />} />
-    <Route path="reports" element={<PharmacyReports />} />
-    <Route path="medicines" element={<MedicineManager />} />
+      {/* قسم المخبري (محمي بصلاحية المخبري فقط) */}
+      <Route element={<ProtectedRoute allowedRole={["lab"]} />}>
+        <Route path="lab" element={<LabDashboard />} />
+      </Route>
+
+      {/* قسم الصيدلية (محمي بصلاحية الصيدلاني فقط) */}
+      <Route element={<ProtectedRoute allowedRole={["pharmacist"]} />}>
+        <Route path="pharmacy" element={<PharmacyReports />}>  
+          <Route index element={<Navigate to="reports" replace />} />
+          <Route path="inventory" element={<InventoryManager />} />
+          <Route path="prescriptions" element={<PrescriptionManager />} />
+          <Route path="reports" element={<PharmacyReports />} />
+          <Route path="medicines" element={<MedicineManager />} />
+        </Route>
+      </Route>
+
+      {/*  قسم المحاسبة والمالية (محمي بصلاحية المحاسب فقط) */}
+      <Route element={<ProtectedRoute allowedRole={["accountant"]} />}>
+        <Route path="accountant">
+          {/* في حال دخل على /accounting مباشرة يتم توجيهه تلقائياً للمدفوعات */}
+          <Route index element={<Navigate to="payments" replace />} />
+          
+          <Route path="payments" element={<PaymentsManager />} />
+          <Route path="reports" element={<ReportManager />} />
+          <Route path="invoices" element={<InvoicesManager />} />
+        </Route>
+      </Route>
+
+    </Route>
   </Route>
-</Route>
-
-          </Route> {/* إغلاق السايدبر */}
-        </Route> {/* إغلاق الحماية العامة */}
-        
-      </Routes>
+</Routes>
     </>
   )
 }
