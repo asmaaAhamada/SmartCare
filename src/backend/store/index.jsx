@@ -50,6 +50,14 @@ import EditestatusReducer from '../slice/lab_mangment/updatestatus'
 import fetchprescriptionsReducer from '../slice/pharmecy/fetchAll'
 import fetchDetailsprescriptionsReducer from '../slice/pharmecy/deteails'
 import fetchmedicationsReducer from '../slice/pharmecy/fetchmedicien'
+import Update_medicationsReducer from '../slice/pharmecy/editeStatus'
+import ADD_medicationsReducer from '../slice/pharmecy/add'
+import delet_medeceinReducer from '../slice/pharmecy/delet'
+import fetchdashboardReducer from '../slice/pharmecy/fetchdashboard'
+import fetchinventoryReducer from '../slice/pharmecy/fetchinvocing'
+import ADD_inventory_restokReducer from '../slice/pharmecy/restock'
+import fetchLowStockReducer from '../slice/pharmecy/fetchLowStock'
+import fetchReportReducer from '../slice/pharmecy/fetchreport'
 const store = configureStore({
   reducer: {
  Log_in:Log_inReducer, 
@@ -102,7 +110,16 @@ const store = configureStore({
  Editestatus:EditestatusReducer,
  fetchprescriptions:fetchprescriptionsReducer,
  fetchDetailsprescriptions:fetchDetailsprescriptionsReducer,
- fetchmedications:fetchmedicationsReducer
+ fetchmedications:fetchmedicationsReducer,
+ Update_medications:Update_medicationsReducer,
+ ADD_medications:ADD_medicationsReducer,
+ delet_medecein:delet_medeceinReducer,
+ fetchdashboard:fetchdashboardReducer,
+ fetchdashboard:fetchdashboardReducer,
+ fetchinventory:fetchinventoryReducer,
+ ADD_inventory_restok:ADD_inventory_restokReducer,
+ fetchLowStock:fetchLowStockReducer,
+ fetchReport:fetchReportReducer
  }
 
 })

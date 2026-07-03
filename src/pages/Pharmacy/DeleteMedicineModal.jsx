@@ -1,8 +1,58 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Dialog, DialogContent, DialogActions, Button, Typography, Box, IconButton } from '@mui/material';
 import { Close } from '@mui/icons-material';
+import { useDispatch, useSelector } from 'react-redux';
+import Swal from "sweetalert2";
+import { delet_medecein, resetDeleteMedicineState } from '../../backend/slice/pharmecy/delet';
 
-const DeleteMedicineModal = ({ open, onClose, onConfirm, medicineName }) => {
+const DeleteMedicineModal = ({
+open,
+onClose,
+medicineId,
+medicineName,
+onRefresh
+}) => {
+    const dispatch = useDispatch();
+  
+    const { loading, success, error } = useSelector(
+    (state) => state.delet_medecein
+);
+useEffect(() => {
+
+    if(success){
+
+        Swal.fire({
+            icon:"success",
+            title:"تم حذف الدواء بنجاح",
+            timer:1800,
+            showConfirmButton:false
+        });
+
+        onClose();
+
+        onRefresh();
+
+        dispatch(resetDeleteMedicineState());
+
+    }
+
+},[success]);
+useEffect(() => {
+
+    if(error){
+
+        Swal.fire({
+            icon:"error",
+            title:"فشلت عملية الحذف",
+            text:error
+        });
+
+        dispatch(resetDeleteMedicineState());
+
+    }
+
+},[error]);
+
   return (
     <Dialog 
       open={open} 
@@ -60,8 +110,9 @@ const DeleteMedicineModal = ({ open, onClose, onConfirm, medicineName }) => {
       {/* الأزرار السفلية العريضة والمتناسقة */}
       <DialogActions style={{ justifyContent: 'center', gap: '15px', paddingBottom: '20px', paddingLeft: '24px', paddingRight: '24px' }}>
         <Button 
-          onClick={onClose} 
-          variant="outlined" 
+         
+onClick={onClose}
+disabled={loading} 
           style={{ 
             borderRadius: '10px', 
             borderColor: '#e0e0e0', 
@@ -74,8 +125,8 @@ const DeleteMedicineModal = ({ open, onClose, onConfirm, medicineName }) => {
           تراجع
         </Button>
         <Button 
-          onClick={onConfirm} 
-          variant="contained" 
+onClick={() => dispatch(delet_medecein(medicineId))}          variant="contained" 
+disabled={loading}
           color="error"
           style={{ 
             borderRadius: '10px', 
@@ -86,7 +137,7 @@ const DeleteMedicineModal = ({ open, onClose, onConfirm, medicineName }) => {
             boxShadow: 'none'
           }}
         >
-          تأكيد الحذف
+{loading ? "جاري الحذف..." : "تأكيد الحذف"}
         </Button>
       </DialogActions>
     </Dialog>
