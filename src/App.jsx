@@ -58,7 +58,7 @@ export default function App({ toggleMode, mode }) {
 
       {/* قسم الصيدلية (محمي بصلاحية الصيدلاني فقط) */}
       <Route element={<ProtectedRoute allowedRole={["pharmacist"]} />}>
-        <Route path="pharmacy" element={<PharmacyReports />}>  
+        <Route path="pharmacy" element={<PharmacyDashboard />}>  
           <Route index element={<Navigate to="reports" replace />} />
           <Route path="inventory" element={<InventoryManager />} />
           <Route path="prescriptions" element={<PrescriptionManager />} />

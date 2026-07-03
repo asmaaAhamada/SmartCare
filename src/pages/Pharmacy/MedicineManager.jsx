@@ -1,61 +1,102 @@
-import React, { useState } from 'react';
-import { Table, Tag, Space, Tooltip } from 'antd';
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Box } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Table, Tag, Space, Tooltip, Empty, Card } from 'antd';
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Box, Typography } from '@mui/material';
 import { Add, Delete, Loop } from '@mui/icons-material';
 import DeleteMedicineModal from './DeleteMedicineModal';
+import { fetchmedications } from '../../backend/slice/pharmecy/fetchmedicien';
+import { useDispatch, useSelector } from 'react-redux';
+import MedicalLoader from '../LOADING/MedicalLoader';
 
 const MedicineManager = () => {
-  const pharmacyColor = '#4A148C'; // اللون البنفسجي الخاص بالقسم
-  const [medicines, setMedicines] = useState([
-    { key: '1', name: 'Panadol Extra', category: 'مسكن آلام', status: 'متوفر' },
-    { key: '2', name: 'Amoxicillin', category: 'مضاد حيوي', status: 'منتهي الصلاحية' },
-  ]);
-  
+  const dispatch = useDispatch();
+  const pharmacyColor = '#4A148C';
+
+  const { data: responseData, isLoading } = useSelector((state) => state.fetchmedications);
+  const serverMedicines = responseData?.data || [];
+
   const [openModal, setOpenModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedMedicine, setSelectedMedicine] = useState(null);
-  const [newMedicine, setNewMedicine] = useState({ name: '', category: '', status: 'متوفر' });
+  const [newMedicine, setNewMedicine] = useState({ name: '', generic_name: '', category: '', price: '' });
+
+  // 🌍 مراقبة حجم الشاشة لمنع أو تفعيل السكرول
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    dispatch(fetchmedications());
+
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [dispatch]);
 
   const handleAdd = () => {
-    setMedicines([...medicines, { ...newMedicine, key: Date.now().toString() }]);
     setOpenModal(false);
-    setNewMedicine({ name: '', category: '', status: 'متوفر' });
+    setNewMedicine({ name: '', generic_name: '', category: '', price: '' });
   };
 
   const handleDeleteConfirm = () => {
     if (selectedMedicine) {
-      setMedicines(medicines.filter(item => item.key !== selectedMedicine.key));
       setOpenDeleteModal(false);
       setSelectedMedicine(null);
     }
   };
 
-  const toggleStatus = (key) => {
-    setMedicines(medicines.map(item => item.key === key ? { ...item, status: item.status === 'متوفر' ? 'غير متوفر' : 'متوفر' } : item));
-  };
-
+  // 🔀 قمنا بحذف الـ width من الأعمدة لتتمدد بحرية وتأخذ كامل مساحة اللابتوب المتاحة
   const columns = [
-    { title: 'اسم الدواء', dataIndex: 'name', key: 'name', align: 'center', width: 200 },
-    { title: 'الفئة العلاجية', dataIndex: 'category', key: 'category', align: 'center', width: 180 },
+    { 
+      title: 'رقم الدواء', 
+      dataIndex: 'id', 
+      key: 'id', 
+      align: 'center', 
+      render: (id) => <strong style={{ color: pharmacyColor }}>#{id}</strong>
+    },
+    { 
+      title: 'الاسم التجاري', 
+      dataIndex: 'name', 
+      key: 'name', 
+      align: 'center', 
+      render: (name) => <span style={{ fontWeight: '600' }}>{name}</span>
+    },
+    { 
+      title: 'الاسم العلمي', 
+      dataIndex: 'generic_name', 
+      key: 'generic_name', 
+      align: 'center' 
+    },
+    { 
+      title: 'الفئة العلاجية', 
+      dataIndex: 'category', 
+      key: 'category', 
+      align: 'center', 
+      render: (cat) => <Tag color="purple">{cat}</Tag>
+    },
+    { 
+      title: 'السعر المعتمد', 
+      dataIndex: 'price', 
+      key: 'price', 
+      align: 'center', 
+      render: (price) => `${price}$`
+    },
     {
-      title: 'الحالة',
-      dataIndex: 'status',
-      key: 'status',
+      title: 'الحالة في المستودع',
+      dataIndex: 'is_active',
+      key: 'is_active',
       align: 'center',
-      width: 150,
-      render: (status) => (
-        <Tag color={status === 'متوفر' ? 'green' : 'red'} style={{ fontSize: '13px', padding: '2px 10px' }}>{status}</Tag>
+      render: (is_active) => (
+        <Tag color={is_active ? 'green' : 'red'} style={{ fontSize: '13px', padding: '2px 10px' }}>
+          {is_active ? 'نشط / متوفر' : 'غير نشط'}
+        </Tag>
       ),
     },
     {
-      title: 'الإجراءات',
+      title: 'الإجراءات والعمليات',
       key: 'actions',
       align: 'center',
-      width: 150,
       render: (_, record) => (
         <Space size="middle">
-          <Tooltip title="تغيير الحالة">
-            <Button size="small" onClick={() => toggleStatus(record.key)} style={{ minWidth: 'auto', border: `1px solid ${pharmacyColor}`, padding: '6px' }}>
+          <Tooltip title="تغيير فاعلية الدواء">
+            <Button size="small" style={{ minWidth: 'auto', border: `1px solid ${pharmacyColor}`, padding: '6px' }}>
               <Loop fontSize="small" style={{ color: pharmacyColor }} />
             </Button>
           </Tooltip>
@@ -74,38 +115,55 @@ const MedicineManager = () => {
   ];
 
   return (
-    <Box>
+    <Box dir="rtl" sx={{ width: '100%', p: 1 }}>
+      {/* هيدر يحتوي على الزر بشكل مرتب ومتناسق */}
       <Box display="flex" justifyContent="flex-start" mb={3}>
         <Button variant="contained" startIcon={<Add />} style={{ backgroundColor: pharmacyColor, fontFamily: 'inherit', fontWeight: 'bold' }} onClick={() => setOpenModal(true)}>
-          إضافة دواء جديد
+          إضافة دواء جديد للمستودع
         </Button>
       </Box>
 
       <style>{`
+        /* جعل محتويات الهيدر تتمدد وتملأ الشاشة */
         .ant-table-wrapper .ant-table-thead > tr > th {
           background-color: ${pharmacyColor} !important;
           color: white !important;
           font-weight: bold !important;
           text-align: center !important;
+          white-space: nowrap; /* يمنع نزول النص لسطر جديد بشكل مشوه */
         }
-        .ant-table-wrapper .ant-table-tbody > tr > td {
-          font-family: 'Cairo', sans-serif !important;
+        .ant-table-wrapper .ant-table {
+          width: 100% !important;
         }
       `}</style>
 
-      <Table 
-        columns={columns} 
-        dataSource={medicines} 
-        bordered 
-        pagination={{ pageSize: 5 }} 
-        scroll={{ x: 'max-content' }} 
-      />
+      {isLoading ? (
+        <MedicalLoader />
+      ) : serverMedicines.length === 0 ? (
+        <Card variant="outlined" style={{ padding: 50, borderRadius: '12px', textAlign: 'center', backgroundColor: '#fafafa' }}>
+          <Empty description={<Typography variant="body1" color="textSecondary" sx={{ fontFamily: 'inherit', mt: 1 }}>لم يتم العثور على أي مستحضرات.</Typography>} />
+        </Card>
+      ) : (
+        /* تفعيل الـ scroll فقط عندما تكون الشاشة أصغر من 960px (تابليت وموبايل) */
+        <Table 
+          columns={columns} 
+          dataSource={serverMedicines} 
+          rowKey={(record) => record.id} 
+          bordered 
+          pagination={{ pageSize: 5 }} 
+          scroll={windowWidth < 960 ? { x: 900 } : undefined} 
+          style={{ width: '100%' }}
+        />
+      )}
 
-      <Dialog open={openModal} onClose={() => setOpenModal(false)} maxWidth="xs" fullWidth>
+      {/* مودال الإضافة */}
+      <Dialog open={openModal} onClose={() => setOpenModal(false)} maxWidth="xs" fullWidth dir="rtl">
         <DialogTitle style={{ textAlign: 'center', color: pharmacyColor, fontWeight: 'bold', fontFamily: 'inherit' }}>إضافة مستحضر طبي جديد</DialogTitle>
         <DialogContent dividers>
-          <TextField fullWidth label="اسم الدواء البرمجي التجاري" size="small" margin="normal" value={newMedicine.name} onChange={(e) => setNewMedicine({...newMedicine, name: e.target.value})} sx={{ '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: pharmacyColor }, '& .MuiInputLabel-root.Mui-focused': { color: pharmacyColor } }} />
-          <TextField fullWidth label="الفئة العلاجية والتركيب" size="small" margin="normal" value={newMedicine.category} onChange={(e) => setNewMedicine({...newMedicine, category: e.target.value})} sx={{ '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: pharmacyColor }, '& .MuiInputLabel-root.Mui-focused': { color: pharmacyColor } }} />
+          <TextField fullWidth label="الاسم التجاري" size="small" margin="normal" value={newMedicine.name} onChange={(e) => setNewMedicine({...newMedicine, name: e.target.value})} sx={{ '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: pharmacyColor }, '& .MuiInputLabel-root.Mui-focused': { color: pharmacyColor } }} />
+          <TextField fullWidth label="الاسم العلمي المعتمد" size="small" margin="normal" value={newMedicine.generic_name} onChange={(e) => setNewMedicine({...newMedicine, generic_name: e.target.value})} sx={{ '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: pharmacyColor }, '& .MuiInputLabel-root.Mui-focused': { color: pharmacyColor } }} />
+          <TextField fullWidth label="الفئة العلاجية" size="small" margin="normal" value={newMedicine.category} onChange={(e) => setNewMedicine({...newMedicine, category: e.target.value})} sx={{ '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: pharmacyColor }, '& .MuiInputLabel-root.Mui-focused': { color: pharmacyColor } }} />
+          <TextField fullWidth label="السعر ($)" type="number" size="small" margin="normal" value={newMedicine.price} onChange={(e) => setNewMedicine({...newMedicine, price: e.target.value})} sx={{ '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: pharmacyColor }, '& .MuiInputLabel-root.Mui-focused': { color: pharmacyColor } }} />
         </DialogContent>
         <DialogActions style={{ padding: '12px' }}>
           <Button onClick={() => setOpenModal(false)} style={{ color: '#666' }}>إلغاء</Button>

@@ -23,3 +23,7 @@ export const LAB = `/lab`
 export const TESTS = `/tests`
 export const UPLOAD =`/upload-result`
 export const ACCOUNTANT =`/accounting`
+export const STATUS =`/status`
+export const PRESCRIPTION = `/prescriptions`
+export const PHARMECY = `/pharmacy`
+export const MEDICATION =`/medications`

@@ -46,6 +46,10 @@ import fetchDetailsinnvocingReducer from '../slice/accounting/deteails_invocing'
 import fetchreportReducer from '../slice/accounting/report'
 import createInvoiceReducer from '../slice/accounting/createInvoice'
 import refundPaymentReducer from '../slice/accounting/refundSlice'
+import EditestatusReducer from '../slice/lab_mangment/updatestatus'
+import fetchprescriptionsReducer from '../slice/pharmecy/fetchAll'
+import fetchDetailsprescriptionsReducer from '../slice/pharmecy/deteails'
+import fetchmedicationsReducer from '../slice/pharmecy/fetchmedicien'
 const store = configureStore({
   reducer: {
  Log_in:Log_inReducer, 
@@ -94,7 +98,11 @@ const store = configureStore({
  fetchDetailsinnvocing:fetchDetailsinnvocingReducer,
  fetchreport:fetchreportReducer,
  createInvoice:createInvoiceReducer,
- refundPayment:refundPaymentReducer
+ refundPayment:refundPaymentReducer,
+ Editestatus:EditestatusReducer,
+ fetchprescriptions:fetchprescriptionsReducer,
+ fetchDetailsprescriptions:fetchDetailsprescriptionsReducer,
+ fetchmedications:fetchmedicationsReducer
  }
 
 })

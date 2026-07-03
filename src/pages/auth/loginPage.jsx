@@ -10,14 +10,15 @@ import InputAdornment from '@mui/material/InputAdornment';
 import MailOutlineIcon from '@mui/icons-material/MailOutline'; 
 import Visibility from '@mui/icons-material/Visibility'; 
 import VisibilityOff from '@mui/icons-material/VisibilityOff'; 
-import BadgeIcon from '@mui/icons-material/Badge'; // أيقونة إضافية للقائمة المنسدلة
+import BadgeIcon from '@mui/icons-material/Badge'; 
 import { baby_blue, darkblue } from '../../color-main/color';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { clearError, Log_in, setformInfo, setError } from '../../backend/slice/auth/log_in_Slice';
 
-import bgImage from '../../assets/image/image.jpg'; 
+import Admin from '../../assets/image/new/سئول.jpg'; 
+import staff from '../../assets/image/new/موظفين.jpg'; 
 
 export default function LoginPage() {
   const medicalTealColor = baby_blue; 
@@ -34,6 +35,12 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   const handleClickShowPassword = () => setShowPassword((prev) => !prev);
+
+  // 🌟 تحديد الصورة بناءً على نوع الحساب الحالي
+  const currentImage = loginType === "admin" ? Admin : staff;
+
+  // 🌟 عكس الكارد: إذا كان موظف نضع row-reverse ليصبح النموذج يساراً والصورة يميناً
+  const cardDirection = loginType === "staff" ? "row-reverse" : "row";
 
   async function Login(e) {
     e.preventDefault();
@@ -56,7 +63,6 @@ export default function LoginPage() {
     try {
       const response = await dispatch(Log_in()).unwrap();
       
-      // 🌟 فحص الرول بشكل مرن لأن الأدمن يرجع بـ admin والموظف بـ staff
       const userObj = response?.data?.admin || response?.data?.staff;
       const role = userObj?.role;
       
@@ -72,7 +78,7 @@ export default function LoginPage() {
         case "pharmacist":
           navigate("/dashbord/pharmacy");
           break;
-        case "accountant": // أضفت المحاسب بناءً على ريسبرنس الباكيند الخاص بك
+        case "accountant": 
           navigate("/dashbord/accountant"); 
           break;
         default:
@@ -123,9 +129,31 @@ export default function LoginPage() {
       <Box sx={{ position: 'absolute', width: 300, height: 300, background: darkblue, filter: 'blur(120px)', borderRadius: '50%', top: -50, left: -50, opacity: 0.4, zIndex: 1 }} />
       <Box sx={{ position: 'absolute', width: 250, height: 250, background: '#6366f1', filter: 'blur(120px)', borderRadius: '50%', bottom: -50, right: -50, opacity: 0.4, zIndex: 1 }} />
 
-      <Card sx={{ display: 'flex', flexDirection: 'row', width: { xs: '100%', sm: '90%', md: '850px' }, height: { xs: 'auto', md: '560px' }, boxShadow: 8, borderRadius: '16px', overflow: 'hidden', zIndex: 2, position: 'relative' }}>
+      {/* 🌟 تم تعديل الترتيب هنا عبر flexDirection بشكل ديناميكي */}
+      <Card sx={{ 
+        display: 'flex', 
+        flexDirection: { xs: 'column', md: cardDirection }, 
+        width: { xs: '100%', sm: '90%', md: '850px' }, 
+        height: { xs: 'auto', md: '560px' }, 
+        boxShadow: 8, 
+        borderRadius: '16px', 
+        overflow: 'hidden', 
+        zIndex: 2, 
+        position: 'relative',
+        transition: 'flex-direction 0.3s ease' // إضافة انيميشن خفيف عند الانتقال
+      }}>
         
-        <Box sx={{ flex: 1, height: '100%', display: { xs: 'none', md: 'block' }, backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} />
+        {/* 🌟 تم ربط الصورة بمتغير currentImage المتغير */}
+        <Box sx={{ 
+          flex: 1, 
+          height: '100%', 
+          display: { xs: 'none', md: 'block' }, 
+          backgroundImage: `url(${currentImage})`, 
+          backgroundSize: 'cover', 
+          backgroundPosition: 'center', 
+          backgroundRepeat: 'no-repeat',
+          transition: 'background-image 0.3s ease' // انيميشن ناعم لتبديل الصورة
+        }} />
 
         <Box component="form" onSubmit={Login} autoComplete="new-password" sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', backgroundColor: 'white', p: { xs: 3, md: 4 }, direction: 'rtl' }}>
           
@@ -140,12 +168,12 @@ export default function LoginPage() {
 
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, width: '100%' }}>
             
-            {/* 🌟 المكون الجديد: Dropdown واجهة تسجيل الدخول */}
+            {/* Dropdown واجهة تسجيل الدخول */}
             <FormControl fullWidth sx={textFieldStyles}>
               <InputLabel id="login-type-label" sx={{ fontFamily: arabicFont }}>نوع الحساب</InputLabel>
               <Select
                 labelId="login-type-label"
-                value={loginType}
+                value={loginType || ''} // التعامل مع القيمة الافتراضية إذا كانت فارغة
                 label="نوع الحساب"
                 onChange={(e) => dispatch(setformInfo({ loginType: e.target.value }))}
                 style={{ fontFamily: arabicFont, textAlign: 'right' }}

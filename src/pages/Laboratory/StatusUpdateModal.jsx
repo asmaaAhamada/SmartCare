@@ -1,24 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, InputLabel, Select, MenuItem, CircularProgress, Box, Typography } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import { Editestatus, resetStatusState } from '../../backend/slice/lab_mangment/updatestatus';
 
 const StatusUpdateModal = ({ open, onClose, data, onUpdate }) => {
+  const dispatch = useDispatch();
   const [status, setStatus] = useState('');
 
-  // اللون الأخضر المخبري المعتمد
+  const { isLoading, success, error } = useSelector((state) => state.Editestatus);
   const labGreenColor = '#1B5E20';
 
   useEffect(() => {
-    if (data) setStatus(data.status);
+    if (data) {
+      // توحيد الحالة القادمة لتطابق أحرف الباك إند الصغيرة
+      setStatus(data.status?.toLowerCase() === 'completed' ? 'completed' : data.status);
+    }
   }, [data]);
 
+  useEffect(() => {
+    if (success) {
+      onUpdate();
+      onClose();
+      dispatch(resetStatusState());
+    }
+  }, [success, dispatch, onClose, onUpdate]);
+
   const handleSave = () => {
-    onUpdate(data.id, status);
+    if (data?.id && status) {
+      dispatch(Editestatus({ id: data.id, status }));
+    }
+  };
+
+  const handleCloseModal = () => {
+    dispatch(resetStatusState());
     onClose();
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      {/* توسيط العنوان وتلوينه باللون الأخضر المعتمد */}
+    <Dialog open={open} onClose={handleCloseModal} maxWidth="xs" fullWidth>
       <DialogTitle 
         style={{ 
           fontFamily: 'inherit', 
@@ -31,7 +50,7 @@ const StatusUpdateModal = ({ open, onClose, data, onUpdate }) => {
       </DialogTitle>
       
       <DialogContent dividers>
-        <FormControl fullWidth style={{ marginTop: 15, marginBottom: 10 }}>
+        <FormControl fullWidth style={{ marginTop: 15, marginBottom: 10 }} disabled={isLoading}>
           <InputLabel 
             id="status-select-label" 
             style={{ color: status ? labGreenColor : 'inherit' }}
@@ -49,24 +68,31 @@ const StatusUpdateModal = ({ open, onClose, data, onUpdate }) => {
               '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: labGreenColor },
             }}
           >
-            <MenuItem value="قيد الانتظار">قيد الانتظار</MenuItem>
-            <MenuItem value="قيد التحليل">قيد التحليل</MenuItem>
-            <MenuItem value="مكتمل">مكتمل</MenuItem>
-            <MenuItem value="ملغي">ملغي</MenuItem>
+            {/* القيمة المرسلة للباك إند (value) بالإنجليزية تماماً كما في الصورة، والعرض بالكامل بالعربية */}
+            <MenuItem value="pending">قيد الانتظار</MenuItem>
+            <MenuItem value="in_progress">قيد التحليل</MenuItem>
+            <MenuItem value="completed">مكتمل</MenuItem>
           </Select>
         </FormControl>
+
+        {error && (
+          <Typography color="error" variant="caption" display="block" textAlign="center" mt={1} fontWeight="bold">
+            {error}
+          </Typography>
+        )}
       </DialogContent>
       
       <DialogActions style={{ padding: '12px 24px' }}>
-        <Button onClick={onClose} style={{ color: '#666', fontFamily: 'inherit' }}>
+        <Button onClick={handleCloseModal} disabled={isLoading} style={{ color: '#666', fontFamily: 'inherit' }}>
           إلغاء
         </Button>
         <Button 
           onClick={handleSave} 
           variant="contained"
-          style={{ backgroundColor: labGreenColor, fontFamily: 'inherit', color: 'white', fontWeight: 'bold' }}
+          disabled={isLoading}
+          style={{ backgroundColor: labGreenColor, fontFamily: 'inherit', color: 'white', fontWeight: 'bold', minWidth: '100px' }}
         >
-          حفظ التعديل
+          {isLoading ? <CircularProgress size={20} style={{ color: 'white' }} /> : 'حفظ التعديل'}
         </Button>
       </DialogActions>
     </Dialog>
