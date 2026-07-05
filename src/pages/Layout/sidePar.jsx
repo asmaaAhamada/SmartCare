@@ -44,6 +44,11 @@ import ReportsIcon from '@mui/icons-material/BarChartOutlined';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
+import LocalHospitalOutlinedIcon from '@mui/icons-material/LocalHospitalOutlined';
+import NewspaperOutlinedIcon from '@mui/icons-material/NewspaperOutlined';
+import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
 import {
   baby_blue,
   darkgray,
@@ -146,6 +151,36 @@ const menuItems = [
     icon: <PointOfSaleIcon sx={{ fontSize: "26px" }} />,
     path: "/dashbord/accountant/invoices",
     roles: ["accountant"],
+  },
+  {
+    text: "الرئيسية والإحصائيات",
+    icon: <HomeOutlinedIcon sx={{ fontSize: "26px" }} />,
+    path: "/dashbord/reception",
+    roles: ["receptionist"],
+  },
+  {
+    text: "استعلامات المرضى",
+    icon: <PeopleAltOutlinedIcon sx={{ fontSize: "26px" }} />,
+    path: "/dashbord/reception/patients",
+    roles: ["receptionist"],
+  },
+  {
+    text: "استعلامات الأطباء",
+    icon: <LocalHospitalOutlinedIcon sx={{ fontSize: "26px" }} />,
+    path: "/dashbord/reception/doctors",
+    roles: ["receptionist"],
+  },
+  {
+    text: "استعلامات الأخبار",
+    icon: <NewspaperOutlinedIcon sx={{ fontSize: "26px" }} />,
+    path: "/dashbord/reception/news",
+    roles: ["receptionist"],
+  },
+  {
+    text: "استعلامات المواعيد",
+    icon: <CalendarMonthOutlinedIcon sx={{ fontSize: "26px" }} />,
+    path: "/dashbord/reception/appointments",
+    roles: ["receptionist"],
   },
   
 ];

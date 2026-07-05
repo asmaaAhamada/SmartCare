@@ -25,6 +25,11 @@ import MedicineManager from './pages/Pharmacy/MedicineManager';
 import PaymentsManager from './pages/accountening/PaymentsManager';
 import InvoicesManager from './pages/accountening/InvoicesManager';
 import ReportManager from './pages/accountening/ReportManager';
+import ReceptionDashboard from './pages/Reception/ReceptionDashboard';
+import ReceptionPatients from './pages/Reception/ReceptionPatients';
+import ReceptionDoctors from './pages/Reception/ReceptionDoctors';
+import ReceptionNews from './pages/Reception/ReceptionNews';
+import ReceptionAppointments from './pages/Reception/ReceptionAppointments';
 
 export default function App({ toggleMode, mode }) {
   return (
@@ -38,7 +43,7 @@ export default function App({ toggleMode, mode }) {
   <Route path="/login" element={<LoginPage />} />
 
   {/* ================= حماية لوحة التحكم بالكامل (تم إضافة accountant) ================= */}
-  <Route element={<ProtectedRoute allowedRole={["admin", "lab", "pharmacist", "accountant"]} />}>
+  <Route element={<ProtectedRoute allowedRole={["admin", "lab", "pharmacist", "accountant" ,"receptionist"]} />}>
     
     <Route path="/dashbord" element={<Sidebar toggleMode={toggleMode} mode={mode} />}>
       {/* الصفحة الافتراضية المباشرة التي تفتح فور دخول لوحة التحكم */}
@@ -78,7 +83,17 @@ export default function App({ toggleMode, mode }) {
           <Route path="invoices" element={<InvoicesManager />} />
         </Route>
       </Route>
-
+{/* قسم الاستعلامات والاستقبال (محمي بصلاحية receptionist فقط) */}
+<Route element={<ProtectedRoute allowedRole={["receptionist"]} />}>
+  <Route path="reception">
+    {/* الصفحة الافتراضية للـ رول هي صفحة الاحصائيات الرئيسية */}
+    <Route index element={<ReceptionDashboard />} />
+    <Route path="patients" element={<ReceptionPatients />} />
+    <Route path="doctors" element={<ReceptionDoctors />} />
+    <Route path="news" element={<ReceptionNews />} />
+    <Route path="appointments" element={<ReceptionAppointments />} />
+  </Route>
+</Route>
     </Route>
   </Route>
 </Routes>

@@ -81,6 +81,9 @@ export default function LoginPage() {
         case "accountant": 
           navigate("/dashbord/accountant"); 
           break;
+           case "receptionist": 
+          navigate("/dashbord/reception"); 
+          break;
         default:
           console.log("صلاحية غير معروفة، توجه للرئيسية");
           navigate("/dashbord");
