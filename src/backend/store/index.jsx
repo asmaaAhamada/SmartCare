@@ -58,6 +58,13 @@ import fetchinventoryReducer from '../slice/pharmecy/fetchinvocing'
 import ADD_inventory_restokReducer from '../slice/pharmecy/restock'
 import fetchLowStockReducer from '../slice/pharmecy/fetchLowStock'
 import fetchReportReducer from '../slice/pharmecy/fetchreport'
+import fetchresptionReducer from '../slice/reseption/fetchAll'
+import fetchAPPOETMENTReducer from '../slice/reseption/apoettment_fetch'
+import fetchQueueReducer from '../slice/reseption/queue'
+import FETCHAPPOETMENTSReducer from '../slice/pharmecy/fetchapoetment'
+import medicalRecordReducer from '../slice/pharmecy/medical'
+import SHOWPATEINTSReducer from '../slice/pharmecy/fetchAllPateints'
+import dispenseReducer from '../slice/pharmecy/add_depeins'
 const store = configureStore({
   reducer: {
  Log_in:Log_inReducer, 
@@ -119,7 +126,14 @@ const store = configureStore({
  fetchinventory:fetchinventoryReducer,
  ADD_inventory_restok:ADD_inventory_restokReducer,
  fetchLowStock:fetchLowStockReducer,
- fetchReport:fetchReportReducer
+ fetchReport:fetchReportReducer,
+ fetchresption:fetchresptionReducer,
+ fetchAPPOETMENT:fetchAPPOETMENTReducer,
+ fetchQueue:fetchQueueReducer,
+ FETCHAPPOETMENTS:FETCHAPPOETMENTSReducer,
+ medicalRecord:medicalRecordReducer,
+ SHOWPATEINTS:SHOWPATEINTSReducer,
+ dispense:dispenseReducer,
  }
 
 })

@@ -30,6 +30,7 @@ import ReceptionPatients from './pages/Reception/ReceptionPatients';
 import ReceptionDoctors from './pages/Reception/ReceptionDoctors';
 import ReceptionNews from './pages/Reception/ReceptionNews';
 import ReceptionAppointments from './pages/Reception/ReceptionAppointments';
+import PatientsShow from './pages/Pharmacy/PatentsShow';
 
 export default function App({ toggleMode, mode }) {
   return (
@@ -69,6 +70,8 @@ export default function App({ toggleMode, mode }) {
           <Route path="prescriptions" element={<PrescriptionManager />} />
           <Route path="reports" element={<PharmacyReports />} />
           <Route path="medicines" element={<MedicineManager />} />
+                    <Route path="Pateints" element={<PatientsShow />} />
+
         </Route>
       </Route>
 

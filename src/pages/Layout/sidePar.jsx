@@ -134,6 +134,12 @@ const menuItems = [
     path: "/dashbord/pharmacy/reports",
     roles: ["pharmacist"],
   },
+   {
+    text: "إدارة المرضى",
+    icon: <ReportsIcon sx={{ fontSize: "25px" }} />,
+    path: "/dashbord/pharmacy/Pateints",
+    roles: ["pharmacist"],
+  },
   {
     text: "إدارة المدفوعات",
     icon: <AttachMoneyIcon sx={{ fontSize: "26px" }} />,

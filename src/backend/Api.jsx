@@ -27,4 +27,4 @@ export const STATUS =`/status`
 export const PRESCRIPTION = `/prescriptions`
 export const PHARMECY = `/pharmacy`
 export const MEDICATION =`/medications`
-export const RESEPTION =`receptionist`
+export const RESEPTION =`/receptionist`
