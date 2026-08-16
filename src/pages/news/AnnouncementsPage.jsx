@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Button, Row, Col, Typography, Space, Tooltip, Popconfirm } from "antd";
+import { Card, Button, Row, Col, Typography, Space, Tooltip } from "antd";
 import { PlusOutlined, EyeOutlined, EditOutlined, DeleteOutlined, CalendarOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { baby_blue } from "../../color-main/color";
@@ -12,16 +12,14 @@ import {
 import { AnnouncementLoader } from "../LOADING/AnnouncementLoader";
 import { AnnouncementEmpty } from "../empty/AnnouncementEmpty";
 import AddAnnouncementModal from "./AddAnnouncementModal";
-import ImagePlaceholder from "../empty/ImagePlaceholder";
 import EditAnnouncementModal from "./EditAnnouncementModal";
-import DeleteAnnouncementModal from "./DeleteAnnouncementModal"; // تأكد من صحة المسار
+import DeleteAnnouncementModal from "./DeleteAnnouncementModal";
 import ViewAnnouncementModal from "./ViewAnnouncementModal";
-// 🌟 استيراد مكون الـ Placeholder المنفصل (تأكد من صحة المسار حسب ترتيب مجلداتك)
 
 const { Title, Text } = Typography;
 
 export default function AnnouncementsPage() {
- const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -35,7 +33,8 @@ export default function AnnouncementsPage() {
 
   // جلب الحالة من الريدكس
   const { data: responseData, isLoading } = useSelector((state) => state.fetchAnnouncement);
-console.log(responseData)
+  console.log(responseData);
+
   useEffect(() => {
     dispatch(fetchAnnouncement());
   }, [dispatch]);
@@ -71,13 +70,14 @@ console.log(responseData)
 
       {/* التحكم بالعرض بناءً على حالة الـ API للكل */}
       {isLoading ? (
- <Row gutter={[20, 20]}>
-      {Array.from({ length: 6 }).map((_, index) => (
-        <Col xs={24} lg={12} key={index}>
-          <Card loading />
-        </Col>
-      ))}
-    </Row>      ) : announcements.length === 0 ? (
+        <Row gutter={[20, 20]}>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Col xs={24} lg={12} key={index}>
+              <Card loading />
+            </Col>
+          ))}
+        </Row>
+      ) : announcements.length === 0 ? (
         <AnnouncementEmpty />
       ) : (
         <Row gutter={[20, 24]}>
@@ -91,17 +91,6 @@ console.log(responseData)
                   border: "1px solid #eef2f5", 
                   boxShadow: "0 4px 12px rgba(0,0,0,0.01)" 
                 }}
-                cover={
-                  item.image_url ? (
-                    <img 
-                      alt={item.title} 
-                      src={item.image_url} 
-                      style={{ height: "200px", objectFit: "cover" }}
-                    />
-                  ) : (
-                    <ImagePlaceholder height="200px" />
-                  )
-                }
                 actions={[
                   <Tooltip title="عرض التفاصيل" key="view-tooltip">
                     <EyeOutlined 

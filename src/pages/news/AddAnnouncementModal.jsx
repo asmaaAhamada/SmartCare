@@ -26,44 +26,33 @@ export default function AddAnnouncementModal({ open, onCancel, onSuccess }) {
   const dispatch = useDispatch();
   const [fileName, setFileName] = useState("");
   const { formInfo, isLoading, error, success } = useSelector((state) => state.AddAnnouncement);
+const [imageFile, setImageFile] = useState(null);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      await dispatch(AddAnnouncement()).unwrap();
-      onCancel(); // إغلاق المودال فوراً عند النجاح
-
-      Swal.fire({
-        icon: "success",
-        title: "تم بنجاح",
-        text: "تمت إضافة الإعلان بنجاح",
-        timer: 1800,
-        showConfirmButton: false,
-        confirmButtonColor: baby_blue,
-      });
-
-      if (onSuccess) onSuccess(); 
-    } catch (err) {
-      onCancel();
-      let errorMessage = "حدث خطأ أثناء إضافة الإعلان";
+  try {
+    // 👈 تمرير imageFile للدالة
+    await dispatch(AddAnnouncement(imageFile)).unwrap(); 
     
-      if (err?.errors) {
-        errorMessage = Object.values(err.errors)
-          .flat()
-          .join("\n");
-      } else if (err?.message) {
-        errorMessage = err.message;
-      }
-    
-      Swal.fire({
-        icon: "error",
-        title: "فشل",
-        text: errorMessage,
-        confirmButtonColor: "#d33",
-      });
-    }
-  };
+    // إعادة تعيين الحقول الخاصة بالصورة
+    setImageFile(null);
+    setFileName("");
+    onCancel();
+
+    Swal.fire({
+      icon: "success",
+      title: "تم بنجاح",
+      text: "تمت إضافة الإعلان بنجاح",
+      timer: 1800,
+      showConfirmButton: false,
+      confirmButtonColor: baby_blue,
+    });
+
+    if (onSuccess) onSuccess(); 
+  } catch (err) {
+    // باقي الكود الخاص بـ catch...
+  }
+};
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -76,12 +65,9 @@ export default function AddAnnouncementModal({ open, onCancel, onSuccess }) {
 
 const handleImage = (e) => {
   const file = e.target.files[0];
-
-  console.log(file);
-
   if (file) {
-    console.log(formInfo.image_url);
-    dispatch(setformInfo({ image_url: file }));
+    setImageFile(file);
+    setFileName(file.name); // 👈 تحديث اسم الملف ليظهر في الشاشة
   }
 };
 
