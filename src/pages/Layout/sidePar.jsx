@@ -61,7 +61,7 @@ import LogoHeader from "./logoHeader";
 
 // 🌟 استيراد الأكشنز الخاصة بتسجيل الخروج وتصفير الفوُرم
 import { Logout } from "../../backend/slice/auth/logout"; 
-import { resetForm } from "../../backend/slice/auth/log_in_Slice"; // تأكد من مسار سلايس اللوجن لديك
+import { resetForm } from "../../backend/slice/auth/log_in_Slice";
 
 const TopBar = lazy(() => import("./TopBar"));
 
